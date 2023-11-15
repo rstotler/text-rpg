@@ -3,29 +3,28 @@ package com.jbs.universe;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.jbs.universe.components.InputManager;
+import com.jbs.universe.screen.console.Console;
 
 public class GameMain extends ApplicationAdapter {
 	OrthographicCamera camera;
+	FrameBuffer frameBuffer;
 	SpriteBatch spriteBatch;
-	BitmapFont font;
 
-	InputManager inputManager;
+	Console console;
 	
 	@Override
 	public void create() {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 800, 600);
+		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 800, 600, false);
 		spriteBatch = new SpriteBatch();
-		font = new BitmapFont(Gdx.files.internal("Fonts/Consolas_18.fnt"), Gdx.files.internal("Fonts/Consolas_18.png"), false);
-		font.setColor(Color.WHITE);
 
-		inputManager = new InputManager();
+		console = new Console();
 	}
 
 	protected void handleInput() {
@@ -51,21 +50,18 @@ public class GameMain extends ApplicationAdapter {
 		update();
 
 		ScreenUtils.clear(0, 0, 0, 1);
+		console.draw(frameBuffer, spriteBatch, camera);
+
 		spriteBatch.setProjectionMatrix(camera.combined);
 		spriteBatch.begin();
-
-		font.draw(spriteBatch, String.valueOf(Gdx.graphics.getFramesPerSecond()), 782, 600);
-
-		for (int i = 0; i < 59; i++) {
-			font.draw(spriteBatch, "This is a test line.", 0, 18 * (i + 1));
-		}
-
+		console.font.draw(spriteBatch, String.valueOf(Gdx.graphics.getFramesPerSecond()), 782, 600);
 		spriteBatch.end();
 	}
 	
 	@Override
 	public void dispose() {
+		frameBuffer.dispose();
 		spriteBatch.dispose();
-		font.dispose();
+		console.dispose();
 	}
 }
