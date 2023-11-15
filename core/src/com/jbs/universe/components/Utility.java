@@ -3,6 +3,7 @@ package com.jbs.universe.components;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.jbs.universe.screen.console.Line;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class Utility {
         put("x", new Color(0/255f, 0/255f, 0/255f, 1));
     }};
 
-    public static void writeColor(String label, String colorCode, int[] location, BitmapFont font, int[] fontSize, SpriteBatch spriteBatch) {
+    public static void writeColor(Line line, int[] location, BitmapFont font, int[] fontSize, SpriteBatch spriteBatch) {
         String targetColor = "";
         int colorCount = 0;
         int printIndex = 0;
@@ -70,8 +71,8 @@ public class Utility {
         boolean writeCheck = false;
         location[1] += fontSize[1];
 
-        for(int i = 0; i < colorCode.length(); i++) {
-            String letter = String.valueOf(colorCode.charAt(i));
+        for(int i = 0; i < line.colorCode.length(); i++) {
+            String letter = String.valueOf(line.colorCode.charAt(i));
 
             // Sort //
             if(stringIsNumber(letter)) {
@@ -82,13 +83,13 @@ public class Utility {
             }
             else {
                 targetColor = targetColor.concat(letter);
-                if(colorCode.length() > i + 1 && stringIsNumber(String.valueOf(colorCode.charAt(i + 1)))) {
+                if(line.colorCode.length() > i + 1 && stringIsNumber(String.valueOf(line.colorCode.charAt(i + 1)))) {
                     writeCheck = true;
                 }
             }
 
             // Write Check //
-            if(i + 1 == colorCode.length()) {
+            if(i + 1 == line.colorCode.length()) {
                 writeCheck = true;
             }
 
@@ -102,14 +103,14 @@ public class Utility {
                 }
 
                 int endIndex = printIndex + colorCount;
-                if(endIndex > label.length()) {
-                    endIndex = label.length();
+                if(endIndex > line.label.length()) {
+                    endIndex = line.label.length();
                 }
-                String textString = label.substring(printIndex, endIndex);
+                String textString = line.label.substring(printIndex, endIndex);
                 font.draw(spriteBatch, textString, displayX, location[1]);
 
                 printIndex += colorCount;
-                if(printIndex == label.length()) {
+                if(printIndex == line.label.length()) {
                     return;
                 }
 

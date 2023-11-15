@@ -1,7 +1,6 @@
 package com.jbs.universe.screen.console;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -12,21 +11,19 @@ import com.jbs.universe.components.Utility;
 import java.util.ArrayList;
 
 public class Console {
-    public BitmapFont font;
-
     int consoleLines;
+    int lineCharacterCount;
     int displayLine;
     ArrayList<Line> lineList;
 
     public Console() {
-        font = new BitmapFont(Gdx.files.internal("Fonts/Consolas_18.fnt"), Gdx.files.internal("Fonts/Consolas_18.png"), false);
-
         consoleLines = 18;
+        lineCharacterCount = 57;
         displayLine = 0;
         lineList = new ArrayList<Line>();
     }
 
-    public void draw(FrameBuffer frameBuffer, SpriteBatch spriteBatch, Camera camera) {
+    public void draw(FrameBuffer frameBuffer, SpriteBatch spriteBatch, BitmapFont font) {
         frameBuffer.begin();
         spriteBatch.begin();
 
@@ -41,19 +38,29 @@ public class Console {
 
         int i = 0;
         for(Line line : lineList.subList(startIndex, endIndex)) {
-            Utility.writeColor(line.label, line.colorCode, new int[]{3, 18 * i++}, font, new int[]{10, 18}, spriteBatch);
+            if(line != null) {
+                Utility.writeColor(line, new int[]{5, 18 * i}, font, new int[]{10, 18}, spriteBatch);
+            }
+            i++;
         }
 
         spriteBatch.end();
         frameBuffer.end();
 
         spriteBatch.begin();
-        font.setColor(Color.WHITE);
         spriteBatch.draw(frameBuffer.getColorBufferTexture(), 0, 22, 0, 0,580, (consoleLines * 18) + 6, 1, 1, 0, 0, 0, 580, (consoleLines * 18) + 6, false, true);
         spriteBatch.end();
     }
 
-    public void dispose() {
-        font.dispose();
+    public void write(Line line, boolean blankCheck) {
+        if(blankCheck && !(lineList.size() > 0 && lineList.get(0) == null)) {
+            lineList.add(0, null);
+        }
+
+        if(line.label.length() <= lineCharacterCount) {
+            lineList.add(0, line);
+        } else {
+            // Word-Wrap
+        }
     }
 }
