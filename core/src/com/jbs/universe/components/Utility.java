@@ -3,8 +3,9 @@ package com.jbs.universe.components;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.jbs.universe.screen.console.Line;
+import com.jbs.universe.screen.console.ColorString;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public class Utility {
         put("x", new Color(0/255f, 0/255f, 0/255f, 1));
     }};
 
-    public static void writeColor(Line line, int[] location, BitmapFont font, int[] fontSize, SpriteBatch spriteBatch) {
+    public static void writeColor(ColorString colorString, int[] location, BitmapFont font, int[] fontSize, SpriteBatch spriteBatch) {
         String targetColor = "";
         int colorCount = 0;
         int printIndex = 0;
@@ -71,8 +72,8 @@ public class Utility {
         boolean writeCheck = false;
         location[1] += fontSize[1];
 
-        for(int i = 0; i < line.colorCode.length(); i++) {
-            String letter = String.valueOf(line.colorCode.charAt(i));
+        for(int i = 0; i < colorString.colorCode.length(); i++) {
+            String letter = String.valueOf(colorString.colorCode.charAt(i));
 
             // Sort //
             if(stringIsNumber(letter)) {
@@ -83,13 +84,13 @@ public class Utility {
             }
             else {
                 targetColor = targetColor.concat(letter);
-                if(line.colorCode.length() > i + 1 && stringIsNumber(String.valueOf(line.colorCode.charAt(i + 1)))) {
+                if(colorString.colorCode.length() > i + 1 && stringIsNumber(String.valueOf(colorString.colorCode.charAt(i + 1)))) {
                     writeCheck = true;
                 }
             }
 
             // Write Check //
-            if(i + 1 == line.colorCode.length()) {
+            if(i + 1 == colorString.colorCode.length()) {
                 writeCheck = true;
             }
 
@@ -103,14 +104,14 @@ public class Utility {
                 }
 
                 int endIndex = printIndex + colorCount;
-                if(endIndex > line.label.length()) {
-                    endIndex = line.label.length();
+                if(endIndex > colorString.label.length()) {
+                    endIndex = colorString.label.length();
                 }
-                String textString = line.label.substring(printIndex, endIndex);
+                String textString = colorString.label.substring(printIndex, endIndex);
                 font.draw(spriteBatch, textString, displayX, location[1]);
 
                 printIndex += colorCount;
-                if(printIndex == line.label.length()) {
+                if(printIndex == colorString.label.length()) {
                     return;
                 }
 
@@ -130,5 +131,73 @@ public class Utility {
             return false;
         }
         return true;
+    }
+
+    public static ArrayList<ColorString> wordWrap(ColorString colorString, int maxWidth) {
+        class WordWrapUtility {
+            public int getNextColorLength(String colorCode) {
+                String nextColorLengthString = "";
+                boolean start = false;
+                for(char c : colorCode.toCharArray()) {
+                    if(stringIsNumber(String.valueOf(c))) {
+                        start = true;
+                        nextColorLengthString += c;
+                    } else if(start) {
+                        return Integer.parseInt(nextColorLengthString);
+                    }
+                }
+                return -1;
+            }
+
+            public String[] getNextColor(String colorCode) {
+                String nextColorString = "";
+                boolean start = false;
+                for(int i = 0; i < colorCode.length(); i++) {
+                    char c = colorCode.charAt(i);
+                    if(!stringIsNumber(String.valueOf(c))) {
+                        start = true;
+                        nextColorString += c;
+                    } else if(start) {
+                        String[] nextColorData = new String[2];
+                        nextColorData[0] = colorCode.substring(i);
+                        nextColorData[1] = nextColorString;
+                        return nextColorData;
+                    }
+                    if(start && i == colorCode.length() - 1) {
+                        String[] nextColorData = new String[2];
+                        nextColorData[0] = colorCode.substring(i - 1);
+                        nextColorData[1] = "";
+                        return nextColorData;
+                    }
+                }
+                return new String[] {"", ""};
+            }
+        }
+
+        ArrayList<ColorString> colorStringList = new ArrayList<ColorString>();
+        colorStringList.add(new ColorString("", ""));
+        for(String word : colorString.label.split(" ")) {
+            if(word.length() + colorStringList.get(colorStringList.size() - 1).label.length() > maxWidth) {
+                colorStringList.add(new ColorString("", ""));
+            }
+            colorStringList.get(colorStringList.size() - 1).label += word + " ";
+        }
+
+        WordWrapUtility wordWrapUtility = new WordWrapUtility();
+        int currentColorLength = wordWrapUtility.getNextColorLength(colorString.colorCode);
+        String[] nextColorData = wordWrapUtility.getNextColor(colorString.colorCode);
+        int currentCount = 0;
+        for(ColorString splitColorString : colorStringList) {
+            for(int i = 0; i < splitColorString.label.length(); i++) {
+                splitColorString.colorCode += "1" + nextColorData[1];
+                currentCount++;
+                if(currentCount == currentColorLength) {
+                    currentColorLength = wordWrapUtility.getNextColorLength(nextColorData[0]);
+                    nextColorData = wordWrapUtility.getNextColor(nextColorData[0]);
+                    currentCount = 0;
+                }
+            }
+        }
+        return colorStringList;
     }
 }

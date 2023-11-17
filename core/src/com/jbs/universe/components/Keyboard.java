@@ -3,18 +3,18 @@ package com.jbs.universe.components;
 public class Keyboard {
     public static String inputCharacterList;
     public static String upperCharacterList;
-    public static boolean backspace;
     public static boolean shift;
     public static boolean control;
+    public static boolean backspace;
 
     public static int backspaceTimer;
 
     public Keyboard() {
         inputCharacterList = "1234567890-=[];',./ABCDEFGHIJKLMNOPQRSTUVWXYZSpace";
         upperCharacterList = "!@#$%^&*()_+{}:\"<>?";
-        backspace = false;
         shift = false;
         control = false;
+        backspace = false;
 
         backspaceTimer = -1;
     }

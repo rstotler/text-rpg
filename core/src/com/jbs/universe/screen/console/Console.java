@@ -1,26 +1,28 @@
 package com.jbs.universe.screen.console;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.jbs.universe.components.Keyboard;
 import com.jbs.universe.components.Utility;
 
 import java.util.ArrayList;
 
+import static com.jbs.universe.components.Utility.wordWrap;
+
 public class Console {
     int consoleLines;
     int lineCharacterCount;
-    int displayLine;
-    ArrayList<Line> lineList;
+    public int displayLine;
+    ArrayList<ColorString> colorStringList;
 
     public Console() {
         consoleLines = 18;
         lineCharacterCount = 57;
         displayLine = 0;
-        lineList = new ArrayList<Line>();
+        colorStringList = new ArrayList<ColorString>();
     }
 
     public void draw(FrameBuffer frameBuffer, SpriteBatch spriteBatch, BitmapFont font) {
@@ -32,14 +34,14 @@ public class Console {
 
         int startIndex = displayLine;
         int endIndex = startIndex + consoleLines;
-        if(endIndex > lineList.size()) {
-            endIndex = lineList.size();
+        if(endIndex > colorStringList.size()) {
+            endIndex = colorStringList.size();
         }
 
         int i = 0;
-        for(Line line : lineList.subList(startIndex, endIndex)) {
-            if(line != null) {
-                Utility.writeColor(line, new int[]{5, 18 * i}, font, new int[]{10, 18}, spriteBatch);
+        for(ColorString colorString : colorStringList.subList(startIndex, endIndex)) {
+            if(colorString != null) {
+                Utility.writeColor(colorString, new int[]{5, 18 * i}, font, new int[]{10, 18}, spriteBatch);
             }
             i++;
         }
@@ -52,15 +54,32 @@ public class Console {
         spriteBatch.end();
     }
 
-    public void write(Line line, boolean blankCheck) {
-        if(blankCheck && !(lineList.size() > 0 && lineList.get(0) == null)) {
-            lineList.add(0, null);
+    public void write(ColorString colorString, boolean blankCheck) {
+        if(blankCheck && !(colorStringList.size() > 0 && colorStringList.get(0) == null)) {
+            colorStringList.add(0, null);
         }
 
-        if(line.label.length() <= lineCharacterCount) {
-            lineList.add(0, line);
+        if(colorString.label.length() <= lineCharacterCount) {
+            colorStringList.add(0, colorString);
         } else {
-            // Word-Wrap
+            for(ColorString splitColorString : wordWrap(colorString, lineCharacterCount)) {
+                colorStringList.add(0, splitColorString);
+            }
+        }
+    }
+
+    public void scroll(int yMod) {
+        if(colorStringList.size() > consoleLines) {
+            int scrollMod = 1;
+            if(Keyboard.control) {
+                scrollMod = 6;
+            }
+            displayLine += yMod * scrollMod;
+            if(displayLine < 0) {
+                displayLine = 0;
+            } else if(displayLine > colorStringList.size() - consoleLines) {
+                displayLine = colorStringList.size() - consoleLines;
+            }
         }
     }
 }
