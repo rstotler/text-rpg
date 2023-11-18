@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 
 public class MiniMap {
-    public void draw(FrameBuffer frameBuffer, SpriteBatch spriteBatch, BitmapFont font) {
+    public void draw(SpriteBatch spriteBatch, BitmapFont font) {
 
     }
 

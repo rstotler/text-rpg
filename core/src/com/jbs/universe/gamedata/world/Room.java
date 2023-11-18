@@ -2,9 +2,14 @@ package com.jbs.universe.gamedata.world;
 
 import com.jbs.universe.gamedata.item.Item;
 import com.jbs.universe.gamedata.player.Player;
+import com.jbs.universe.screen.console.ColorString;
 import com.jbs.universe.screen.console.Console;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.jbs.universe.components.Utility.createUnderlineColorString;
 
 public class Room {
     public int galaxy;
@@ -14,18 +19,35 @@ public class Room {
     public int room;
     public Spaceship spaceshipObject;
 
+    ColorString name;
+    public ColorString description;
+
+    public Map<String, int[]> exit;
+
     public ArrayList<Player> mobList;
     public ArrayList<Item> itemList;
 
     public boolean inside;
 
-    public Room(int galaxy, int system, int planet, int area, int room) {
+    public Room(int galaxy, int system, int planet, int area, int room, ColorString name) {
         this.galaxy = galaxy;
         this.system = system;
         this.planet = planet;
         this.area = area;
         this.room = room;
         spaceshipObject = null;
+
+        this.name = name;
+        this.description = new ColorString("", "");
+
+        exit = new HashMap<String, int[]>() {{
+            put("North", null);
+            put("East", null);
+            put("South", null);
+            put("West", null);
+            put("Up", null);
+            put("Down", null);
+        }};
 
         mobList = new ArrayList<Player>();
         itemList = new ArrayList<Item>();
@@ -35,6 +57,33 @@ public class Room {
 
     public void display(Console console, ArrayList<Galaxy> galaxyList, Player player) {
         boolean roomIsLit = isLit(galaxyList, player, player);
+
+        // Room Name //
+        ColorString colorStringName = new ColorString(name.label, name.colorCode);
+        if(!roomIsLit) {
+            colorStringName = new ColorString("Darkness", "1ddda1dda1da1da1da1a1da1dda");
+        }
+        if(inside) {
+            colorStringName.label = "(Inside) " + colorStringName.label;
+            colorStringName.colorCode = "1r6w2r" + colorStringName.colorCode;
+        }
+        console.write(colorStringName, true);
+        console.write(createUnderlineColorString(colorStringName.label), false);
+
+        // Description //
+        if(!roomIsLit) {
+            console.write(new ColorString("It's too dark to see..", "2w1y17w2y"), false);
+        } else {
+            console.write(new ColorString(description.label, description.colorCode), false);
+        }
+
+        // Exits //
+
+        // Spaceships //
+
+        // Mobs //
+
+        // Items //
     }
 
     public boolean sameRoomCheck(Player target) {

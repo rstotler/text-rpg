@@ -2,6 +2,7 @@ package com.jbs.universe.screen.console;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -13,41 +14,57 @@ import java.util.ArrayList;
 import static com.jbs.universe.components.Utility.wordWrap;
 
 public class Console {
+    FrameBuffer frameBuffer;
+
     int consoleLines;
     int lineCharacterCount;
     public int displayLine;
     ArrayList<ColorString> colorStringList;
 
+    boolean redrawCheck;
+
     public Console() {
+        frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 800, 600, false);
+
         consoleLines = 18;
         lineCharacterCount = 57;
         displayLine = 0;
         colorStringList = new ArrayList<ColorString>();
+
+        redrawCheck = true;
     }
 
-    public void draw(FrameBuffer frameBuffer, SpriteBatch spriteBatch, BitmapFont font) {
-        frameBuffer.begin();
-        spriteBatch.begin();
+    public void draw(SpriteBatch spriteBatch, BitmapFont font) {
+        if(redrawCheck) {
+            frameBuffer.begin();
+            spriteBatch.begin();
 
-        Gdx.gl.glClearColor(15/255f, 15/255f, 15/255f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            Gdx.gl.glClearColor(15/255f, 15/255f, 15/255f, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        int startIndex = displayLine;
-        int endIndex = startIndex + consoleLines;
-        if(endIndex > colorStringList.size()) {
-            endIndex = colorStringList.size();
-        }
-
-        int i = 0;
-        for(ColorString colorString : colorStringList.subList(startIndex, endIndex)) {
-            if(colorString != null) {
-                Utility.writeColor(colorString, new int[]{5, 18 * i}, font, new int[]{10, 18}, spriteBatch);
+            int startIndex = displayLine;
+            int endIndex = startIndex + consoleLines;
+            if(endIndex > colorStringList.size()) {
+                endIndex = colorStringList.size();
             }
-            i++;
-        }
 
-        spriteBatch.end();
-        frameBuffer.end();
+            int i = 0;
+            for(ColorString colorString : colorStringList.subList(startIndex, endIndex)) {
+                if(colorString != null) {
+                    Utility.writeColor(colorString, new int[]{5, 18 * i}, font, new int[]{10, 18}, spriteBatch);
+                }
+                i++;
+            }
+
+            spriteBatch.end();
+            frameBuffer.end();
+
+            spriteBatch.begin();
+            spriteBatch.draw(frameBuffer.getColorBufferTexture(), 0, 22, 0, 0,580, (consoleLines * 18) + 6, 1, 1, 0, 0, 0, 580, (consoleLines * 18) + 6, false, true);
+            spriteBatch.end();
+
+            redrawCheck = false;
+        }
 
         spriteBatch.begin();
         spriteBatch.draw(frameBuffer.getColorBufferTexture(), 0, 22, 0, 0,580, (consoleLines * 18) + 6, 1, 1, 0, 0, 0, 580, (consoleLines * 18) + 6, false, true);
@@ -66,6 +83,9 @@ public class Console {
                 colorStringList.add(0, splitColorString);
             }
         }
+
+        displayLine = 0;
+        redrawCheck = true;
     }
 
     public void scroll(int yMod) {

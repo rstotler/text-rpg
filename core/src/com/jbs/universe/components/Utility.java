@@ -200,4 +200,27 @@ public class Utility {
         }
         return colorStringList;
     }
+
+    public static ColorString createUnderlineColorString(String targetString) {
+        ColorString underlineString = new ColorString("", "");
+        int indentCount = (int) (targetString.length() * .15);
+        if(indentCount <= 0) {
+            indentCount = 1;
+        }
+
+        for(int i = 0; i < targetString.length(); i++) {
+            if(i >= indentCount && i < targetString.length() - indentCount) {
+                underlineString.label += "=";
+            } else {
+                underlineString.label += "-";
+            }
+
+            if(i % 2 == 1) {
+                underlineString.colorCode += "1y";
+            } else {
+                underlineString.colorCode += "1dy";
+            }
+        }
+        return underlineString;
+    }
 }
