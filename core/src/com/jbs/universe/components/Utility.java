@@ -201,6 +201,20 @@ public class Utility {
         return colorStringList;
     }
 
+    public static ColorString getCountString(int targetCount, boolean blankSpace) {
+        String displayString = "";
+        String displayColorCode = "";
+        if(targetCount > 1) {
+            displayString = " (" + String.valueOf(targetCount) + ")";
+            displayColorCode = "2r" + String.valueOf(String.valueOf(targetCount).length()) + "w1r";
+            if(!blankSpace) {
+                displayString = displayString.substring(1);
+                displayColorCode = "1" + displayColorCode.substring(1);
+            }
+        }
+        return new ColorString(displayString, displayColorCode);
+    }
+
     public static ColorString createUnderlineColorString(String targetString) {
         ColorString underlineString = new ColorString("", "");
         int indentCount = (int) (targetString.length() * .15);

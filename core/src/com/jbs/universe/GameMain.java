@@ -14,6 +14,8 @@ import com.jbs.universe.components.Keyboard;
 import com.jbs.universe.gamedata.Config;
 import com.jbs.universe.gamedata.player.Player;
 import com.jbs.universe.gamedata.world.*;
+import com.jbs.universe.gamedata.world.Room.Exit;
+import com.jbs.universe.gamedata.world.Room.Room;
 import com.jbs.universe.screen.InputBar;
 import com.jbs.universe.screen.MiniMap;
 import com.jbs.universe.screen.console.ColorString;
@@ -118,47 +120,47 @@ public class GameMain extends ApplicationAdapter {
 			areaCOTU.roomList.add(roomCOTU000);
 			roomCOTU000.description.label = "You stand on a large floating platform at the Center of the Universe. Billions of multi-colored stars twinkle and flash from ages past. You see a bridge leading to the Spaceport to the South and a garden to the North.";
 			roomCOTU000.description.colorCode = "46w1w1ddw1da2dw2da1dw2ddw1da1dw2w1w2dw2ddw1da2ddw2y13w1dc1c1ddc1w1y1r1dr1do1o1y1dy1ddy7w1c1dc1ddc2dc1c1ddc5w1c1dc1ddc1dc1c1w14w2y32w1w1dw2ddw1dw1w1dw1ddw1dw1w7w1w5ddw6w1g1dg1ddg1g1dg1ddg8w1w4ddw1y";
-			roomCOTU000.exit.put("South", new int[]{0, 0, 3, areaCOTUNum, 1});
-			roomCOTU000.exit.put("North", new int[]{0, 0, 3, areaCOTUNum, 3});
+			roomCOTU000.exit.put("South", new Exit(0, 0, 3, areaCOTUNum, 1, -1));
+			roomCOTU000.exit.put("North", new Exit(0, 0, 3, areaCOTUNum, 3, -1));
 			//roomCOTU000.exit.put("East", new int[]{0, 0, 3, areaIceCavernNum, 0}); // Ice Cavern
 
 			Room roomCOTU001 = new Room(0, 0, 3, areaCOTUNum, 1, new ColorString("Bridge To The Spaceport", "14w1w1dw2ddw1dw1w1dw1ddw1dw"));
 			areaCOTU.roomList.add(roomCOTU001);
-			roomCOTU001.exit.put("North", new int[]{0, 0, 3, areaCOTUNum, 0});
-			roomCOTU001.exit.put("South", new int[]{0, 0, 3, areaCOTUNum, 2});
+			roomCOTU001.exit.put("North", new Exit(0, 0, 3, areaCOTUNum, 0, -1));
+			roomCOTU001.exit.put("South", new Exit(0, 0, 3, areaCOTUNum, 2, -1));
 
 			Room roomCOTU002 = new Room(0, 0, 3, areaCOTUNum, 2, new ColorString("Spaceport Entrance", "1w1dw2ddw1dw1w1dw1ddw1dw9w"));
 			areaCOTU.roomList.add(roomCOTU002);
-			roomCOTU002.exit.put("North", new int[]{0, 0, 3, areaCOTUNum, 1});
-			roomCOTU002.exit.put("South", new int[]{0, 0, 3, areaCOTUNum, 5});
-			roomCOTU002.exit.put("East", new int[]{0, 0, 3, areaCOTUNum, 6});
+			roomCOTU002.exit.put("North", new Exit(0, 0, 3, areaCOTUNum, 1, -1));
+			roomCOTU002.exit.put("South", new Exit(0, 0, 3, areaCOTUNum, 5, -1));
+			roomCOTU002.exit.put("East", new Exit(0, 0, 3, areaCOTUNum, 6, -1));
 
 			Room roomCOTU003 = new Room(0, 0, 3, areaCOTUNum, 3, new ColorString("A Peaceful Garden", "2w1w1dw2ddw1dw1w1ddw1da1w1g1dg1ddg1g1dg1ddg"));
 			areaCOTU.roomList.add(roomCOTU003);
-			roomCOTU003.exit.put("South", new int[]{0, 0, 3, areaCOTUNum, 0});
-			roomCOTU003.exit.put("West", new int[]{0, 0, 3, areaCOTUNum, 4});
+			roomCOTU003.exit.put("South", new Exit(0, 0, 3, areaCOTUNum, 0, -1));
+			roomCOTU003.exit.put("West", new Exit(0, 0, 3, areaCOTUNum, 4, -1));
 
 			Room roomCOTU004 = new Room(0, 0, 3, areaCOTUNum, 4, new ColorString("A Little Wooden Shack", "9w1do1ddo1dddo1do1ddo1dddo6w"));
 			areaCOTU.roomList.add(roomCOTU004);
-			roomCOTU004.exit.put("East", new int[]{0, 0, 3, areaCOTUNum, 3});
+			roomCOTU004.exit.put("East", new Exit(0, 0, 3, areaCOTUNum, 3, -1));
 
 			Room roomCOTU005 = new Room(0, 0, 3, areaCOTUNum, 5, new ColorString("COTU Landing Pad", "16w"));
 			areaCOTU.roomList.add(roomCOTU005);
-			roomCOTU005.exit.put("North", new int[]{0, 0, 3, areaCOTUNum, 2});
+			roomCOTU005.exit.put("North", new Exit(0, 0, 3, areaCOTUNum, 2, -1));
 
 			Room roomCOTU006 = new Room(0, 0, 3, areaCOTUNum, 6, new ColorString("COTU Training Center Hall", "25w"));
 			areaCOTU.roomList.add(roomCOTU006);
-			roomCOTU006.exit.put("West", new int[]{0, 0, 3, areaCOTUNum, 2});
-			roomCOTU006.exit.put("Up", new int[]{0, 0, 3, areaCOTUNum, 7});
+			roomCOTU006.exit.put("West", new Exit(0, 0, 3, areaCOTUNum, 2, -1));
+			roomCOTU006.exit.put("Up", new Exit(0, 0, 3, areaCOTUNum, 7, -1));
 
 			Room roomCOTU007 = new Room(0, 0, 3, areaCOTUNum, 7, new ColorString("COTU Training Center Floor 1", "28w"));
 			areaCOTU.roomList.add(roomCOTU007);
-			roomCOTU007.exit.put("Down", new int[]{0, 0, 3, areaCOTUNum, 6});
-			roomCOTU007.exit.put("North", new int[]{0, 0, 3, areaCOTUNum, 8});
+			roomCOTU007.exit.put("Down", new Exit(0, 0, 3, areaCOTUNum, 6, -1));
+			roomCOTU007.exit.put("North", new Exit(0, 0, 3, areaCOTUNum, 8, -1));
 
 			Room roomCOTU008 = new Room(0, 0, 3, areaCOTUNum, 8, new ColorString("Unarmed Mobs Room", "17w"));
 			areaCOTU.roomList.add(roomCOTU008);
-			roomCOTU008.exit.put("South", new int[]{0, 0, 3, areaCOTUNum, 7});
+			roomCOTU008.exit.put("South", new Exit(0, 0, 3, areaCOTUNum, 7, -1));
 		}
 	}
 

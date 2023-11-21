@@ -1,5 +1,6 @@
 package com.jbs.universe.gamedata.world;
 
+import com.jbs.universe.gamedata.world.Room.Room;
 import com.jbs.universe.screen.console.ColorString;
 
 import java.util.ArrayList;
