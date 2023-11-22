@@ -1,12 +1,10 @@
 package com.jbs.universe.gamedata.world.Room;
 
+import com.jbs.universe.gamedata.Mob;
 import com.jbs.universe.gamedata.item.Item;
 import com.jbs.universe.gamedata.player.Player;
-import com.jbs.universe.gamedata.world.Galaxy;
-import com.jbs.universe.gamedata.world.Planet;
-import com.jbs.universe.gamedata.world.Spaceship;
-import com.jbs.universe.screen.console.ColorString;
-import com.jbs.universe.screen.console.Console;
+import com.jbs.universe.gamedata.world.*;
+import com.jbs.universe.screen.console.*;
 
 import java.util.*;
 
@@ -27,7 +25,7 @@ public class Room {
     public Map<String, Exit> exit;
     public Map<String, Door> door;
 
-    public ArrayList<Player> mobList;
+    public ArrayList<Mob> mobList;
     public ArrayList<Item> itemList;
     public ArrayList<Spaceship> spaceshipList;
 
@@ -61,7 +59,7 @@ public class Room {
             put("Down", null);
         }};
 
-        mobList = new ArrayList<Player>();
+        mobList = new ArrayList<Mob>();
         itemList = new ArrayList<Item>();
         spaceshipList = new ArrayList<Spaceship>();
 
@@ -183,8 +181,124 @@ public class Room {
         }
 
         // Mobs //
+        ArrayList<DisplayListItem> mobDisplayDataList = new ArrayList<DisplayListItem>();
+        int totalMobCount = 0;
+        for(Mob mob : mobList) {
+            DisplayListItem targetMobDisplayData = null;
+            for(DisplayListItem mobDisplayData : mobDisplayDataList) {
+                boolean groupCheck = player.recruitList.contains(mob);
+                boolean targetCheck = false;
+                if(!groupCheck) {
+                    targetCheck = player.targetList.contains(mob);
+                }
+                boolean combatCheck = player.combatList.contains(mob);
+                if(mob.num == mobDisplayData.mob.num && targetCheck == mobDisplayData.targetCheck && groupCheck == mobDisplayData.groupCheck && combatCheck == mobDisplayData.combatCheck) {
+                    targetMobDisplayData = mobDisplayData;
+                    break;
+                }
+            }
+
+            if(targetMobDisplayData == null) {
+                boolean groupCheck = player.recruitList.contains(mob);
+                boolean targetCheck = false;
+                if(!groupCheck) {
+                    targetCheck = player.targetList.contains(mob);
+                }
+                boolean combatCheck = player.combatList.contains(mob);
+
+                DisplayListItem mobDisplayListItem = new DisplayListItem(mob);
+                mobDisplayListItem.targetCheck = targetCheck;
+                mobDisplayListItem.groupCheck = groupCheck;
+                mobDisplayListItem.combatCheck = combatCheck;
+                mobDisplayDataList.add(mobDisplayListItem);
+            } else {
+                targetMobDisplayData.count++;
+            }
+            totalMobCount++;
+        }
+
+        if(!roomIsLit && totalMobCount > 0) {
+            ColorString countColorString = getCountString(totalMobCount, true);
+            countColorString.label = "There is someone here." + countColorString.label;
+            countColorString.colorCode = "21w1y" + countColorString.colorCode;
+            console.write(countColorString, false);
+        }
+
+        else {
+            for(DisplayListItem mobDisplayData : mobDisplayDataList) {
+                String targetString = "";
+                String targetColorCode = "";
+                if(mobDisplayData.groupCheck) {
+                    targetString = "[+]";
+                    targetColorCode = "3g";
+                } else if(mobDisplayData.targetCheck) {
+                    targetString = "[+]";
+                    targetColorCode = "3m";
+                }
+                ColorString countColorString = getCountString(mobDisplayData.count, true);
+                String mobDisplayString = "";
+                String mobDisplayColorCode = "";
+                if(mobDisplayData.combatCheck) {
+                    mobDisplayString = targetString + mobDisplayData.mob.prefix + mobDisplayData.mob.name.label + " is here, fighting you!" + countColorString.label;
+                    mobDisplayColorCode = targetColorCode + mobDisplayData.mob.prefix.length() + "w1w" + mobDisplayData.mob.name.colorCode + "8w1y13w1y" + countColorString.colorCode;
+                } else {
+                    mobDisplayString = targetString + mobDisplayData.mob.prefix + mobDisplayData.mob.name.label + " " + mobDisplayData.mob.roomDescription.label + countColorString.label;
+                    mobDisplayColorCode = targetColorCode + mobDisplayData.mob.prefix.length() + "w1w" + mobDisplayData.mob.name.colorCode + "1w" + mobDisplayData.mob.roomDescription.colorCode + countColorString.colorCode;
+                }
+                console.write(new ColorString(mobDisplayString, mobDisplayColorCode), false);
+            }
+        }
 
         // Items //
+        ArrayList<DisplayListItem> itemDisplayDataList = new ArrayList<DisplayListItem>();
+        int totalItemCount = 0;
+        for(Item item : itemList) {
+            DisplayListItem targetItemDisplayData = null;
+            for(DisplayListItem itemDisplayData : itemDisplayDataList) {
+                if(item.num == itemDisplayData.item.num && item.pocket.equals(itemDisplayData.item.pocket)) {
+                    if(item.num != Item.getSpecialItemNum("Corpse") || item.name.label.equals(itemDisplayData.item.name.label)) {
+                        targetItemDisplayData = itemDisplayData;
+                        break;
+                    }
+                }
+            }
+            if(targetItemDisplayData == null) {
+                int itemCount = 1;
+                if(item.quantity != -1) {
+                    itemCount = item.quantity;
+                }
+                DisplayListItem itemDisplayListItem = new DisplayListItem(item);
+                itemDisplayListItem.count = itemCount;
+                itemDisplayDataList.add(itemDisplayListItem);
+                totalItemCount += itemCount;
+            } else {
+                targetItemDisplayData.count++;
+                totalItemCount++;
+            }
+        }
+
+        if(!roomIsLit && totalItemCount > 0) {
+            ColorString countColorString = getCountString(totalItemCount, true);
+            countColorString.label = "There is something on the ground." + countColorString.label;
+            countColorString.colorCode = "32w1y" + countColorString.colorCode;
+            console.write(countColorString, false);
+        }
+
+        else {
+            for(DisplayListItem itemDisplayData : itemDisplayDataList) {
+                String modString = "";
+                String modColorCode = "";
+                if(itemDisplayData.item.flags.contains("Glowing")) {
+                    modString = " (Glowing)";
+                    modColorCode = "2y1w1dw1ddw1w2dw1ddw1y";
+                }
+
+                ColorString countColorString = getCountString(itemDisplayData.count, true);
+                countColorString.label = itemDisplayData.item.prefix + " " + itemDisplayData.item.name.label + " " + itemDisplayData.item.roomDescription.label + modString + countColorString.label;
+                countColorString.colorCode = itemDisplayData.item.prefix.length() + "w1w" + itemDisplayData.item.name.colorCode + "1w" + itemDisplayData.item.roomDescription.colorCode + modColorCode + countColorString.colorCode;
+                console.write(countColorString, false);
+            }
+        }
     }
 
     public boolean sameRoomCheck(Player target) {

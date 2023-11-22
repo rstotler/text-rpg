@@ -3,11 +3,15 @@ package com.jbs.universe.components;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.jbs.universe.gamedata.Mob;
+import com.jbs.universe.gamedata.player.Player;
+import com.jbs.universe.gamedata.world.Room.Room;
 import com.jbs.universe.screen.console.ColorString;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class Utility {
     static Map<String, Color> colorMap = new HashMap<String, Color>() {{
@@ -236,5 +240,53 @@ public class Utility {
             }
         }
         return underlineString;
+    }
+
+    public static Mob createMob(int num, Room targetRoom, Mob targetMob) {
+        if(targetMob == null) {
+            int targetGalaxy;
+            int targetSystem;
+            int targetPlanet;
+            int targetArea;
+            int targetRoomNum;
+            int targetSpaceship;
+            if(targetRoom.spaceshipObject != null) {
+                targetGalaxy = targetRoom.spaceshipObject.galaxy;
+                targetSystem = targetRoom.spaceshipObject.system;
+                targetPlanet = targetRoom.spaceshipObject.planet;
+                targetArea = targetRoom.area;
+                targetRoomNum = targetRoom.room;
+                targetSpaceship = targetRoom.spaceshipObject.num;
+            } else {
+                targetGalaxy = targetRoom.galaxy;
+                targetSystem = targetRoom.system;
+                targetPlanet = targetRoom.planet;
+                targetArea = targetRoom.area;
+                targetRoomNum = targetRoom.room;
+                targetSpaceship = -1;
+            }
+            targetMob = new Mob(targetGalaxy, targetSystem, targetPlanet, targetArea, targetRoomNum, targetSpaceship, num);
+        }
+
+        // Set Room Display Position //
+        Random rand = new Random();
+        int xOffset = rand.nextInt(160) - 80;
+        int yOffset = rand.nextInt(65) - 20;
+        targetMob.displayOffset = new int[] {xOffset, yOffset};
+
+        // Insert Mob Into List (Depending On Y-Offset) //
+        int insertIndex = -1;
+        for(int i = 0; i < targetRoom.mobList.size(); i++) {
+            Mob mob = targetRoom.mobList.get(i);
+            if(yOffset >= mob.displayOffset[1]) {
+                insertIndex = i + 1;
+            }
+        }
+        if(targetRoom.mobList.isEmpty() || insertIndex == -1) {
+            insertIndex = 0;
+        }
+        targetRoom.mobList.add(insertIndex, targetMob);
+
+        return targetMob;
     }
 }

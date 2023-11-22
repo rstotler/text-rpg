@@ -2,7 +2,7 @@ package com.jbs.universe.gamedata.world;
 
 import com.jbs.universe.screen.console.ColorString;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class Galaxy {
     public ArrayList<SolarSystem> systemList;

@@ -14,15 +14,15 @@ import com.jbs.universe.components.Keyboard;
 import com.jbs.universe.gamedata.Config;
 import com.jbs.universe.gamedata.player.Player;
 import com.jbs.universe.gamedata.world.*;
-import com.jbs.universe.gamedata.world.Room.Exit;
-import com.jbs.universe.gamedata.world.Room.Room;
+import com.jbs.universe.gamedata.world.Room.*;
 import com.jbs.universe.screen.InputBar;
 import com.jbs.universe.screen.MiniMap;
-import com.jbs.universe.screen.console.ColorString;
-import com.jbs.universe.screen.console.Console;
+import com.jbs.universe.screen.console.*;
 import com.jbs.universe.screen.roomscreen.RoomScreen;
 
 import java.util.ArrayList;
+
+import static com.jbs.universe.components.Utility.createMob;
 
 public class GameMain extends ApplicationAdapter {
 	FrameBuffer frameBuffer;
@@ -54,7 +54,7 @@ public class GameMain extends ApplicationAdapter {
 		inputBar = new InputBar();
 		config = new Config();
 
-		player = new Player(0, 0, 3, 0, 0, -1, -1);
+		player = new Player(0, 0, 3, 0, 0, -1);
 		galaxyList = new ArrayList<Galaxy>();
 
 		frameTimer = 0;
@@ -128,6 +128,7 @@ public class GameMain extends ApplicationAdapter {
 			areaCOTU.roomList.add(roomCOTU001);
 			roomCOTU001.exit.put("North", new Exit(0, 0, 3, areaCOTUNum, 0, -1));
 			roomCOTU001.exit.put("South", new Exit(0, 0, 3, areaCOTUNum, 2, -1));
+			createMob(1, roomCOTU001, null);
 
 			Room roomCOTU002 = new Room(0, 0, 3, areaCOTUNum, 2, new ColorString("Spaceport Entrance", "1w1dw2ddw1dw1w1dw1ddw1dw9w"));
 			areaCOTU.roomList.add(roomCOTU002);
