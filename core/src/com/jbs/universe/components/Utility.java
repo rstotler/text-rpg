@@ -8,10 +8,7 @@ import com.jbs.universe.gamedata.player.Player;
 import com.jbs.universe.gamedata.world.Room.Room;
 import com.jbs.universe.screen.console.ColorString;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class Utility {
     static Map<String, Color> colorMap = new HashMap<String, Color>() {{
@@ -205,6 +202,23 @@ public class Utility {
         return colorStringList;
     }
 
+    public static String getTargetDirectionString(String targetDirKey) {
+        if(targetDirKey.charAt(0) == 'n') {
+            return "North";
+        } else if(targetDirKey.charAt(0) == 'e') {
+            return "East";
+        } else if(targetDirKey.charAt(0) == 's') {
+            return "South";
+        } else if(targetDirKey.charAt(0) == 'w') {
+            return "West";
+        } else if(targetDirKey.charAt(0) == 'u') {
+            return "Up";
+        } else if(targetDirKey.charAt(0) == 'd') {
+            return "Down";
+        }
+        return "North";
+    }
+    
     public static ColorString getCountString(int targetCount, boolean blankSpace) {
         String displayString = "";
         String displayColorCode = "";

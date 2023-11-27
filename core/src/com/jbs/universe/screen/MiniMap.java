@@ -3,6 +3,7 @@ package com.jbs.universe.screen;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.jbs.universe.gamedata.world.Area;
 
 public class MiniMap {
     public void draw(SpriteBatch spriteBatch, BitmapFont font) {
@@ -10,6 +11,10 @@ public class MiniMap {
     }
 
     public void toggle(String key) {
+
+    }
+
+    public void loadAreaMap(Area targetArea) {
 
     }
 }

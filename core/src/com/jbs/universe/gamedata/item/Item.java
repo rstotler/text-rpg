@@ -14,9 +14,12 @@ public class Item {
     public ColorString roomDescription;
 
     public int quantity;
+    public ArrayList<String> passwordList;
 
     public Item() {
         flags = new ArrayList<String>();
+
+        passwordList = new ArrayList<String>();
     }
 
     public static int getSpecialItemNum(String targetItem) {

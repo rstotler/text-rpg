@@ -1,4 +1,4 @@
-package com.jbs.universe.screen.console;
+package com.jbs.universe.gamedata.world.Room;
 
 import com.jbs.universe.gamedata.Mob;
 import com.jbs.universe.gamedata.item.Item;

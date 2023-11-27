@@ -1,5 +1,6 @@
 package com.jbs.universe.gamedata.world.Room;
 
+import com.jbs.universe.gamedata.GameObject;
 import com.jbs.universe.gamedata.Mob;
 import com.jbs.universe.gamedata.item.Item;
 import com.jbs.universe.gamedata.player.Player;
@@ -11,7 +12,7 @@ import java.util.*;
 import static com.jbs.universe.components.Utility.createUnderlineColorString;
 import static com.jbs.universe.components.Utility.getCountString;
 
-public class Room {
+public class Room implements GameObject {
     public int galaxy;
     public int system;
     public int planet;
@@ -375,5 +376,81 @@ public class Room {
         }
 
         return null;
+    }
+
+    public static TargetDistanceObject getTargetDistance(ArrayList<Galaxy> galaxyList, Room startRoom, GameObject targetObject, int maxRange) {
+        boolean targetFoundCheck = false;
+        int targetRange = 0;
+        String searchDir = "";
+        String messageType = "";
+
+        String targetClass = String.valueOf(targetObject.getClass());
+        targetClass = targetClass.substring(targetClass.lastIndexOf('.') + 1);
+
+        if(targetClass.equals("Player") || targetClass.equals("Mob")) {
+            if( (((Player) targetObject).isNPC() && startRoom.mobList.contains(targetObject))
+            || ( !(((Player) targetObject).isNPC()) && startRoom.sameRoomCheck((Player) targetObject))) {
+                return new TargetDistanceObject(0, "", "");
+            }
+        } else {
+            if(startRoom.sameRoomCheck())
+        }
+    }
+
+    public static Map<String, GameObject> getAreaAndRoom(ArrayList<Galaxy> galaxyList, GameObject target) {
+        String targetClass = String.valueOf(target.getClass());
+        targetClass = targetClass.substring(targetClass.lastIndexOf('.') + 1);
+        Room targetRoom = null;
+        Area targetArea = null;
+
+        if(targetClass.equals("Room")) {
+            if(((Room) target).spaceshipObject != null) {
+                targetRoom = Room.exists(galaxyList, ((Room) target).spaceshipObject.num, ((Room) target).spaceshipObject.galaxy, ((Room) target).spaceshipObject.system, ((Room) target).spaceshipObject.planet, ((Room) target).area, ((Room) target).room);
+                if(targetRoom != null) {
+                    targetArea = targetRoom.spaceshipObject.areaList.get(((Room) target).area);
+                }
+            } else {
+                targetRoom = Room.exists(galaxyList, -1, ((Room) target).galaxy, ((Room) target).system, ((Room) target).planet, ((Room) target).area, ((Room) target).room);
+                if(targetRoom != null) {
+                    targetArea = galaxyList.get(((Room) target).galaxy).systemList.get(((Room) target).system).planetList.get(((Room) target).planet).areaList.get(((Room) target).area);
+                }
+            }
+        }
+        else if(targetClass.equals("Player") || targetClass.equals("Mob")) {
+            targetRoom = Room.exists(galaxyList, -1, ((Player) target).galaxy, ((Player) target).system, ((Player) target).planet, ((Player) target).area, ((Player) target).room);
+            if(targetRoom != null) {
+                if(targetRoom.spaceshipObject != null) {
+                    targetArea = targetRoom.spaceshipObject.areaList.get(((Player) target).area);
+                } else {
+                    targetArea = galaxyList.get(targetRoom.galaxy).systemList.get(targetRoom.system).planetList.get(targetRoom.planet).areaList.get(targetRoom.area);
+                }
+            }
+        }
+        if(targetRoom == null) {
+            targetRoom = galaxyList.get(0).systemList.get(0).planetList.get(0).areaList.get(0).roomList.get(0);
+            targetArea = galaxyList.get(0).systemList.get(0).planetList.get(0).areaList.get(0);
+        }
+
+        Map<String, GameObject> returnData = new HashMap<String, GameObject>();
+        returnData.put("Area", targetArea);
+        returnData.put("Room", targetRoom);
+        return returnData;
+    }
+
+    public static String getOppositeDirection(String targetDirection) {
+        targetDirection = targetDirection.toLowerCase();
+        if(targetDirection.charAt(0) == 'n') {
+            return "South";
+        } else if(targetDirection.charAt(0) == 'e') {
+            return "West";
+        } else if(targetDirection.charAt(0) == 's') {
+            return "North";
+        } else if(targetDirection.charAt(0) == 'w') {
+            return "East";
+        } else if(targetDirection.charAt(0) == 'u') {
+            return "Down";
+        } else {
+            return "Up";
+        }
     }
 }

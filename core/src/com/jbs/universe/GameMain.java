@@ -21,6 +21,7 @@ import com.jbs.universe.screen.console.*;
 import com.jbs.universe.screen.roomscreen.RoomScreen;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.jbs.universe.components.Utility.createMob;
 
@@ -254,7 +255,8 @@ public class GameMain extends ApplicationAdapter {
 	}
 
 	public void processInput(String userInput) {
-		String[] userInputList = userInput.replaceAll(" +", " ").split(" ");
+		String[] directionStringList = new String[] {"north", "nort", "nor", "no", "n", "east", "eas", "ea", "e", "south", "sout", "sou", "so", "s", "west", "wes", "we", "w", "up", "u", "down", "dow", "do", "d"};
+		String[] userInputList = userInput.toLowerCase().replaceAll(" +", " ").split(" ");
 		Room currentRoom = Room.exists(galaxyList, player.spaceship, player.galaxy, player.system, player.planet, player.area, player.room);
 		if(currentRoom == null) {
 			currentRoom = galaxyList.get(0).systemList.get(0).planetList.get(0).areaList.get(0).roomList.get(0);
@@ -262,8 +264,17 @@ public class GameMain extends ApplicationAdapter {
 
 		// Basic Commands //
 		// Look //
-		if(userInputList.length == 1 && (userInputList[0].equals("look") || userInputList[0].equals("loo") || userInputList[0].equals("lo") || userInputList[0].equals("l"))) {
+		if(userInputList.length == 1 && Arrays.asList("look", "loo", "lo", "l").contains(userInputList[0])) {
 			currentRoom.display(console, galaxyList, player);
+		}
+
+		// Movement //
+		else if(userInputList.length == 1 && Arrays.asList(directionStringList).contains(userInputList[0])) {
+
+			// Move Direction '#' //
+
+			// Move Direction //
+			player.moveCheck(console, miniMap, galaxyList, player, currentRoom, userInputList[0]);
 		}
 
 		else {
