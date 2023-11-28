@@ -1,4 +1,4 @@
-package com.jbs.universe.screen;
+package com.jbs.universe.screen.inputbar;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -8,12 +8,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.jbs.universe.GameMain;
 import com.jbs.universe.components.Keyboard;
-import com.jbs.universe.components.Utility;
 import com.jbs.universe.gamedata.player.Player;
-import com.jbs.universe.gamedata.world.Galaxy;
+import com.jbs.universe.gamedata.world.Galaxy.Galaxy;
 import com.jbs.universe.screen.console.ColorString;
 
 import java.util.ArrayList;
+
+import static com.jbs.universe.screen.console.Console.writeColor;
 
 public class InputBar {
     FrameBuffer frameBuffer;
@@ -64,6 +65,7 @@ public class InputBar {
         // Backspace //
         if(!inputString.isEmpty() && Keyboard.backspaceTimer == 0) {
             inputString = inputString.substring(0, inputString.length() - 1);
+            redrawCheck = true;
         }
     }
 
@@ -76,12 +78,6 @@ public class InputBar {
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
             String carrotColor = "y";
-            if(player.getCombatSkill() != null && (player.getCombatSkill().name.label.equals("Block") || player.getCombatSkill().name.label.equals("Dodge"))) {
-                carrotColor = "g";
-            } else if(!player.actionList.isEmpty() && (player.actionList.get(0).actionType.equals("Stun") || player.actionList.get(0).actionType.equals("Stumble"))) {
-                carrotColor = "m";
-            }
-
             String displayString = inputString;
             if(displayString.length() > 54) {
                 displayString = displayString.substring(displayString.length() - 54);
@@ -91,7 +87,7 @@ public class InputBar {
                 displayString = displayString.concat("_");
             }
             String displayColorCode = "2".concat(carrotColor).concat(String.valueOf(displayString.length() + 1)).concat("w");
-            Utility.writeColor(new ColorString(displayString, displayColorCode), new int[]{5, 1}, font, new int[]{10, 18}, spriteBatch);
+            writeColor(new ColorString(displayString, displayColorCode), new int[]{5, 1}, font, new int[]{10, 18}, spriteBatch);
 
             spriteBatch.end();
             frameBuffer.end();
