@@ -1,6 +1,6 @@
-package com.jbs.universe.gamedata.world.Area;
+package com.jbs.universe.gamedata.world.area;
 
-import com.jbs.universe.gamedata.world.Room.Room;
+import com.jbs.universe.gamedata.world.room.Room;
 import com.jbs.universe.screen.console.ColorString;
 
 import java.util.ArrayList;

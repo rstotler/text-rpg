@@ -1,11 +1,92 @@
 package com.jbs.universe.gamedata.player;
 
+import com.jbs.universe.gamedata.item.Item;
 import com.jbs.universe.gamedata.world.Location;
+import com.jbs.universe.gamedata.world.galaxy.Galaxy;
+import com.jbs.universe.gamedata.world.room.Room;
+import com.jbs.universe.gamedata.world.spaceship.Spaceship;
+import com.jbs.universe.screen.console.ColorString;
+import com.jbs.universe.screen.console.Console;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Player {
     public Location location;
 
+    public Map<String, ArrayList<Item>> itemList;
+
     public Player(Location location) {
         this.location = location;
+
+        itemList = new HashMap<String, ArrayList<Item>>() {{
+           put("Misc.", new ArrayList<Item>());
+        }};
+    }
+
+    // Action Functions //
+    public void move(Console console, ArrayList<Galaxy> galaxyList, String inputDirection) {
+        Room currentRoom = Room.getRoom(galaxyList, location);
+
+        if(currentRoom.exit.get(inputDirection) == null) {
+            console.write(new ColorString("You can't go that way!", "7w1y13w1y"), true);
+        }
+
+        else {
+            location = currentRoom.exit.get(inputDirection);
+            currentRoom = Room.getRoom(galaxyList, location);
+            currentRoom.display(console, galaxyList);
+        }
+    }
+
+    public void enterShip(Console console, ArrayList<Galaxy> galaxyList, String targetSpaceshipString) {
+        Room currentRoom = Room.getRoom(galaxyList, location);
+
+        Spaceship targetSpaceship = null;
+        for(Spaceship spaceship : currentRoom.spaceshipList) {
+            if(spaceship.keyList.contains(targetSpaceshipString)) {
+                targetSpaceship = spaceship;
+                break;
+            }
+        }
+
+        if(targetSpaceship == null) {
+            console.write(new ColorString("You don't see it.", "7w1y8w1y"), true);
+        } else if(!targetSpaceship.password.isEmpty() && !hasKey(targetSpaceship.password)) {
+            console.write(new ColorString("It's locked.", "2w1y8w1y"), true);
+        } else if(!targetSpaceship.outsideEntranceLocationList.contains(currentRoom.location)) {
+            console.write(new ColorString("You don't see any entrances here.", "7w1y24w1y"), true);
+        }
+
+//        else if(targetSpaceship.status.equals("Launching")) {
+//            console.write(new ColorString("You can't do that while the ship is launching!", "7w1y37w1y"), true);
+//        }
+
+        else {
+            for(int i = 0; i < targetSpaceship.outsideEntranceLocationList.size(); i++) {
+                Location entranceLocation = targetSpaceship.outsideEntranceLocationList.get(i);
+                if(currentRoom.location.equals(entranceLocation)) {
+                    entranceLocation = targetSpaceship.innerEntranceLocationList.get(i);
+                    location = entranceLocation;
+
+                    Room entranceRoom = Room.getRoom(galaxyList, entranceLocation);
+                    entranceRoom.display(console, galaxyList);
+                    break;
+                }
+            }
+        }
+    }
+
+    // Utility Functions //
+    public boolean hasKey(String targetPassword) {
+        for(String pocketString : itemList.keySet()) {
+            for(Item item : itemList.get(pocketString)) {
+                if(item.passwordList.contains(targetPassword)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

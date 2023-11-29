@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.jbs.universe.GameMain;
 import com.jbs.universe.components.Keyboard;
 import com.jbs.universe.gamedata.player.Player;
-import com.jbs.universe.gamedata.world.Galaxy.Galaxy;
+import com.jbs.universe.gamedata.world.galaxy.Galaxy;
 import com.jbs.universe.screen.console.ColorString;
 
 import java.util.ArrayList;

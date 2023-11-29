@@ -1,4 +1,4 @@
-package com.jbs.universe.gamedata.world.Star;
+package com.jbs.universe.gamedata.world.star;
 
 import com.jbs.universe.screen.console.ColorString;
 

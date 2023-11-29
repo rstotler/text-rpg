@@ -1,6 +1,9 @@
 package com.jbs.universe;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -9,19 +12,26 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.jbs.universe.components.Keyboard;
 import com.jbs.universe.gamedata.player.Player;
-import com.jbs.universe.gamedata.world.Area.Area;
-import com.jbs.universe.gamedata.world.Galaxy.Galaxy;
 import com.jbs.universe.gamedata.world.Location;
-import com.jbs.universe.gamedata.world.Planet.Planet;
-import com.jbs.universe.gamedata.world.Room.Room;
-import com.jbs.universe.gamedata.world.SolarSystem.SolarSystem;
-import com.jbs.universe.gamedata.world.Star.Star;
+import com.jbs.universe.gamedata.world.area.Area;
+import com.jbs.universe.gamedata.world.galaxy.Galaxy;
+import com.jbs.universe.gamedata.world.planet.Planet;
+import com.jbs.universe.gamedata.world.room.Room;
+import com.jbs.universe.gamedata.world.solarsystem.SolarSystem;
+import com.jbs.universe.gamedata.world.spaceship.Spaceship;
+import com.jbs.universe.gamedata.world.star.Star;
+import com.jbs.universe.screen.console.ColorString;
+import com.jbs.universe.screen.console.Console;
 import com.jbs.universe.screen.inputbar.InputBar;
 import com.jbs.universe.screen.minimap.MiniMap;
-import com.jbs.universe.screen.console.*;
 import com.jbs.universe.screen.roomscreen.RoomScreen;
+import jdk.internal.net.http.common.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static com.jbs.universe.components.Utility.combineStringArray;
+import static com.jbs.universe.components.Utility.getDirectionString;
 
 public class GameMain extends ApplicationAdapter {
 	FrameBuffer frameBuffer;
@@ -44,7 +54,7 @@ public class GameMain extends ApplicationAdapter {
 		Galaxy galaxyMilkyWay = new Galaxy(galaxyMilkyWayName);
 		galaxyList.add(galaxyMilkyWay);
 		
-		// Center Of The Universe //
+		// Solar System - Center Of The Universe //
 		ColorString systemCotuName = new ColorString("Cotu System", "5shim-w6shim-w");
 		ColorString starKonstantineName = new ColorString("Konstantine", "11shim-w");
 		Star starKonstantine = new Star(starKonstantineName);
@@ -52,7 +62,7 @@ public class GameMain extends ApplicationAdapter {
 		galaxyMilkyWay.systemList.add(systemCotu);
 
 		ColorString planetCotuName = new ColorString("Cotu", "4shim-w");
-		Planet planetCotu = new Planet(planetCotuName);
+		Planet planetCotu = new Planet(planetCotuName, 93456, 1440, 525600, 23.43f, 7917);
 		systemCotu.planetList.add(planetCotu);
 
 		ColorString areaLimboName = new ColorString("Limbo", "5shim-w");
@@ -60,9 +70,43 @@ public class GameMain extends ApplicationAdapter {
 		planetCotu.areaList.add(areaLimbo);
 
 		ColorString roomLimboName = new ColorString("Limbo", "5shim-w");
-		Room roomLimbo = new Room(roomLimboName, null);
+		Location locationLimbo = new Location(0, 0, 0, 0, 0);
+		Room roomLimbo = new Room(roomLimboName, null, locationLimbo);
 		areaLimbo.roomList.add(roomLimbo);
-		
+
+		// Area - Center Of The Universe //
+		ColorString areaCotuName = new ColorString("Center of the Universe", "7shim-w3shim-w4shim-w8shim-w");
+		Area areaCotu = new Area(areaCotuName);
+		planetCotu.areaList.add(areaCotu);
+
+		ColorString roomCotu000Name = new ColorString("Center of the Universe", "7shim-w3shim-w4shim-w8shim-w");
+		Location locationCotu000 = new Location(0, 0, 0, 1, 0);
+		Room roomCotu000 = new Room(roomCotu000Name, null, locationCotu000);
+		areaCotu.roomList.add(roomCotu000);
+
+		ColorString roomCotu001Name = new ColorString("A Peaceful Garden", "2w9shim-w6shim-g");
+		Location locationCotu001 = new Location(0, 0, 0, 1, 1);
+		Room roomCotu001 = new Room(roomCotu001Name, null, locationCotu001);
+		areaCotu.roomList.add(roomCotu001);
+		roomCotu001.makeExit("South", roomCotu000, true);
+
+		ColorString roomCotu002Name = new ColorString("Launch Pad A", "7shim-w3shim-w2w");
+		Location locationCotu002 = new Location(0, 0, 0, 1, 2);
+		Room roomCotu002 = new Room(roomCotu002Name, null, locationCotu002);
+		areaCotu.roomList.add(roomCotu002);
+		roomCotu002.makeExit("North", roomCotu000, true);
+
+		ColorString roomCotu003Name = new ColorString("Launch Pad B", "7shim-w3shim-w2w");
+		Location locationCotu003 = new Location(0, 0, 0, 1, 3);
+		Room roomCotu003 = new Room(roomCotu003Name, null, locationCotu003);
+		areaCotu.roomList.add(roomCotu003);
+		roomCotu003.makeExit("North", roomCotu002, true);
+
+		// Transport Ship //
+		ColorString spaceshipCotuShipName = new ColorString("Large Transport Ship", "6w10shim-w4shim-w");
+		Spaceship spaceshipCotuShip = Spaceship.create(spaceshipCotuShipName, "");
+		spaceshipCotuShip.park(galaxyList, roomCotu002);
+
 		// Sol System //
 		ColorString systemSolName = new ColorString("Sol System", "4shim-w6shim-w");
 		ColorString starSolName = new ColorString("Sol", "3shim-w");
@@ -71,8 +115,11 @@ public class GameMain extends ApplicationAdapter {
 		galaxyMilkyWay.systemList.add(systemSol);
 
 		ColorString planetEarthName = new ColorString("Earth", "5shim-w");
-		Planet planetEarth = new Planet(planetEarthName);
+		Planet planetEarth = new Planet(planetEarthName, 93456, 1440, 525600, 23.43f, 7917);
 		systemSol.planetList.add(planetEarth);
+
+		// Load Player Data //
+		player = new Player(new Location(0, 0, 0, 1, 0));
 	}
 
 	@Override
@@ -90,7 +137,7 @@ public class GameMain extends ApplicationAdapter {
 		frameTimer = 0;
 
 		galaxyList = new ArrayList<>();
-		player = new Player(new Location(0, 0, 0, 0, 0));
+		player = null;
 
 		loadGame();
 	}
@@ -154,6 +201,10 @@ public class GameMain extends ApplicationAdapter {
 		keyboard.update();
 		inputBar.update(this);
 
+		if(frameTimer == 0) {
+//			galaxyList.get(player.location.galaxy).systemList.get(player.location.system).update();
+		}
+
 		frameTimer += 1;
 		if(frameTimer >= 60) {
 			frameTimer = 0;
@@ -188,8 +239,25 @@ public class GameMain extends ApplicationAdapter {
 		String[] userInputList = userInput.toLowerCase().replaceAll(" +", " ").split(" ");
 		Room playerRoom = Room.getRoom(galaxyList, player.location);
 
-		if(Arrays.asList("look", "loo", "lo", "l").contains(userInput.toLowerCase())) {
+		// Look //
+		if(userInputList.length == 1 && Arrays.asList("look", "loo", "lo", "l").contains(userInput.toLowerCase())) {
 			playerRoom.display(console, galaxyList);
+		}
+
+		// Movement //
+		else if(userInputList.length == 1 && Arrays.asList(directionStringList).contains(userInput.toLowerCase())) {
+			player.move(console, galaxyList, getDirectionString(userInput.toLowerCase()));
+		}
+
+		// Enter //
+		else if(Arrays.asList("enter", "ente", "ent", "en").contains(userInputList[0])) {
+			if(userInputList.length > 1) {
+				String targetSpaceshipString = combineStringArray(Arrays.copyOfRange(userInputList, 1, userInputList.length));
+				player.enterShip(console, galaxyList, targetSpaceshipString);
+			}
+			else {
+				console.write(new ColorString("Enter what ship?", "15w1y"), true);
+			}
 		}
 
 		else {
