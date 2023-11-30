@@ -27,4 +27,17 @@ public class Keyboard {
             }
         }
     }
+
+    public static String getArrowDirectionString(String targetKey) {
+        targetKey = targetKey.toLowerCase();
+        if(targetKey.charAt(0) == 'u') {
+            return "North";
+        } else if(targetKey.charAt(0) == 'r') {
+            return "East";
+        } else if(targetKey.charAt(0) == 'd') {
+            return "South";
+        } else {
+            return "West";
+        }
+    }
 }

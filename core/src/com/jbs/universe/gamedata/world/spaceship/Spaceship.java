@@ -4,6 +4,7 @@ import com.jbs.universe.gamedata.world.Location;
 import com.jbs.universe.gamedata.world.area.Area;
 import com.jbs.universe.gamedata.world.galaxy.Galaxy;
 import com.jbs.universe.gamedata.world.room.Room;
+import com.jbs.universe.gamedata.world.solarsystem.SolarSystem;
 import com.jbs.universe.screen.components.Plane;
 import com.jbs.universe.screen.components.Point;
 import com.jbs.universe.screen.console.ColorString;
@@ -19,6 +20,8 @@ public class Spaceship {
     public int num;
     public ArrayList<Area> areaList;
 
+    public Location location;
+
     public String password;
 
     public Plane landedSize;
@@ -32,6 +35,8 @@ public class Spaceship {
     public Spaceship(ColorString name, String password) {
         this.num = numCount++;
         areaList = new ArrayList<>();
+
+        location = new Location(-1, -1, -1, -1, -1);
 
         this.password = password;
 
@@ -78,6 +83,9 @@ public class Spaceship {
 
     public void park(ArrayList<Galaxy> galaxyList, Room targetRoom) {
         // targetRoom - Represents Top-Left Corner Of Parking Spot //
+
+        // Temp? - Update Galaxy & System Location //
+        location = new Location(targetRoom.location.galaxy, targetRoom.location.system, location);
 
         Room loopRoom = targetRoom;
         Room yRoom = targetRoom;

@@ -25,7 +25,6 @@ import com.jbs.universe.screen.console.Console;
 import com.jbs.universe.screen.inputbar.InputBar;
 import com.jbs.universe.screen.minimap.MiniMap;
 import com.jbs.universe.screen.roomscreen.RoomScreen;
-import jdk.internal.net.http.common.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,8 +61,14 @@ public class GameMain extends ApplicationAdapter {
 		galaxyMilkyWay.systemList.add(systemCotu);
 
 		ColorString planetCotuName = new ColorString("Cotu", "4shim-w");
-		Planet planetCotu = new Planet(planetCotuName, 93456, 1440, 525600, 23.43f, 7917);
+		Location planetCotuLocation = new Location(0, 0, 0);
+		Planet planetCotu = new Planet(planetCotuName, planetCotuLocation,93456, 1440, 525600, 23.43f, 7917);
 		systemCotu.planetList.add(planetCotu);
+
+		planetCotu.minutesInDay = 350;
+		planetCotu.minutesInYear = 350;
+		planetCotu.updateNightDayTimers();
+		planetCotu.updatePosition();
 
 		ColorString areaLimboName = new ColorString("Limbo", "5shim-w");
 		Area areaLimbo = new Area(areaLimboName);
@@ -107,17 +112,6 @@ public class GameMain extends ApplicationAdapter {
 		Spaceship spaceshipCotuShip = Spaceship.create(spaceshipCotuShipName, "");
 		spaceshipCotuShip.park(galaxyList, roomCotu002);
 
-		// Sol System //
-		ColorString systemSolName = new ColorString("Sol System", "4shim-w6shim-w");
-		ColorString starSolName = new ColorString("Sol", "3shim-w");
-		Star starSol = new Star(starSolName);
-		SolarSystem systemSol = new SolarSystem(systemSolName, starSol);
-		galaxyMilkyWay.systemList.add(systemSol);
-
-		ColorString planetEarthName = new ColorString("Earth", "5shim-w");
-		Planet planetEarth = new Planet(planetEarthName, 93456, 1440, 525600, 23.43f, 7917);
-		systemSol.planetList.add(planetEarth);
-
 		// Load Player Data //
 		player = new Player(new Location(0, 0, 0, 1, 0));
 	}
@@ -127,6 +121,7 @@ public class GameMain extends ApplicationAdapter {
 		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 800, 600, false);
 		spriteBatch = new SpriteBatch();
 		font = new BitmapFont(Gdx.files.internal("Fonts/Code_New_Roman_18.fnt"), Gdx.files.internal("Fonts/Code_New_Roman_18.png"), false);
+		font.setFixedWidthGlyphs("-");
 
 		keyboard = new Keyboard();
 		roomScreen = new RoomScreen();
@@ -151,11 +146,19 @@ public class GameMain extends ApplicationAdapter {
 
 				if(key.equals("Delete")) {
 					Keyboard.backspace = true;
-				} else if(key.equals("L-Shift") || key.equals("R-Shift")) {
+				} else if(Arrays.asList("L-Shift", "R-Shift").contains(key)) {
 					Keyboard.shift = true;
-				} else if(Keyboard.inputCharacterList.contains(key)) {
+				} else if(Arrays.asList("L-Ctrl", "R-Ctrl").contains(key)) {
+					Keyboard.control = true;
+				}
+
+				else if(Keyboard.control && (Arrays.asList("Up", "Down", "Left", "Right").contains(key))) {
+					player.move(console, galaxyList, Keyboard.getArrowDirectionString(key));
+				}
+
+				else if(Keyboard.inputCharacterList.contains(key)) {
 					inputBar.inputKey(key, Keyboard.shift);
-				} else if(key.equals("Up") || key.equals("Down") || key.equals("[") || key.equals("]")) {
+				} else if(Arrays.asList("Up", "Down").contains(key)) {
 					inputBar.handleInput(key);
 				} else if(key.equals("Enter")) {
 					String userInput = inputBar.enterInput();
@@ -168,10 +171,11 @@ public class GameMain extends ApplicationAdapter {
 							System.exit(0);
 						}
 					}
-				} else if(key.equals("Escape")) {
-					System.exit(0);
 				}
 
+				else if(key.equals("Escape")) {
+					System.exit(0);
+				}
 				return true;
 			}
 
@@ -182,8 +186,10 @@ public class GameMain extends ApplicationAdapter {
 				if(key.equals("Delete")) {
 					Keyboard.backspace = false;
 					Keyboard.backspaceTimer = -1;
-				} else if(key.equals("L-Shift") || key.equals("R-Shift")) {
+				} else if(Arrays.asList("L-Shift", "R-Shift").contains(key)) {
 					Keyboard.shift = false;
+				} else if(Arrays.asList("L-Ctrl", "R-Ctrl").contains(key)) {
+					Keyboard.control = false;
 				}
 
 				return true;
@@ -202,7 +208,7 @@ public class GameMain extends ApplicationAdapter {
 		inputBar.update(this);
 
 		if(frameTimer == 0) {
-//			galaxyList.get(player.location.galaxy).systemList.get(player.location.system).update();
+			SolarSystem.getSystem(galaxyList, player.location).update(console, player);
 		}
 
 		frameTimer += 1;

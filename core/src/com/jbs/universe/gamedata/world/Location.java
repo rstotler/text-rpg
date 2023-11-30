@@ -34,6 +34,26 @@ public class Location {
         spaceshipObject = spaceship;
     }
 
+    public Location(int galaxy, int system, Location location) {
+        this.galaxy = galaxy;
+        this.system = system;
+        planet = location.planet;
+        area = location.area;
+        room = location.room;
+
+        spaceshipObject = location.spaceshipObject;
+    }
+
+    public Location(int galaxy, int system, int planet) {
+        this.galaxy = galaxy;
+        this.system = system;
+        this.planet = planet;
+        area = -1;
+        room = -1;
+
+        spaceshipObject = null;
+    }
+
     public static void display(Console console, Room targetRoom, String directionString) {
         String spaceString = "";
         String spaceColorCode = "";

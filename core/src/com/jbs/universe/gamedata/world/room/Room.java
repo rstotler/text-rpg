@@ -1,12 +1,10 @@
 package com.jbs.universe.gamedata.world.room;
 
 import com.jbs.universe.gamedata.world.Location;
-import com.jbs.universe.gamedata.world.area.Area;
 import com.jbs.universe.gamedata.world.galaxy.Galaxy;
 import com.jbs.universe.gamedata.world.spaceship.Spaceship;
 import com.jbs.universe.screen.console.ColorString;
 import com.jbs.universe.screen.console.Console;
-import jdk.internal.net.http.common.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;

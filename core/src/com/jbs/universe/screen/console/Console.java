@@ -17,7 +17,6 @@ import static com.jbs.universe.components.Utility.stringIsNumber;
 
 public class Console {
     static Map<String, Color> colorMap;
-    static ArrayList<String> patternList;
 
     FrameBuffer frameBuffer;
 
@@ -85,9 +84,6 @@ public class Console {
             put("ddda", new Color(35/255f, 35/255f, 35/255f, 1));
             put("x", new Color(0/255f, 0/255f, 0/255f, 1));
         }};
-
-        patternList = new ArrayList<>();
-        patternList.add("shim");
 
         frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 800, 600, false);
 
@@ -192,12 +188,14 @@ public class Console {
                 if(colorMap.containsKey(targetColor)) {
                     font.setColor(colorMap.get(targetColor));
                 }
-                else if(targetColor.contains("-") && patternList.contains(targetColor.substring(0, targetColor.indexOf('-')))) {
+                else if(targetColor.contains("-")) {
                     drawPatternCheck = true;
 
                     // Pattern Setup //
                     if(targetColor.substring(0, targetColor.indexOf('-')).equals("shim")) {
                         loopCount = 4;
+                    } else if(targetColor.substring(0, targetColor.indexOf('-')).equals("alt")) {
+                        loopCount = 2;
                     }
                 } else {
                     font.setColor(Color.WHITE);
@@ -216,12 +214,14 @@ public class Console {
                     if(drawPatternCheck) {
                         if(targetColor.substring(0, targetColor.indexOf('-')).equals("shim")) {
                             if(patternIndex == 0) {
-                                patternColor = targetColor.substring(targetColor.indexOf('-') + 1, targetColor.indexOf('-') + 2);
+                                patternColor = targetColor.substring(targetColor.indexOf('-') + 1);
                                 if(colorMap.containsKey("l" + patternColor)) {
                                     font.setColor(colorMap.get("l" + patternColor));
                                 }
                                 patternString = patternString.substring(0, 1);
-                            } else {
+                            }
+
+                            else {
                                 patternString = "";
                                 for(int blankIndex = 0; blankIndex < patternIndex; blankIndex++) {
                                     patternString += " ";
@@ -246,11 +246,33 @@ public class Console {
                                 }
                             }
                         }
+
+                        else if(targetColor.substring(0, targetColor.indexOf('-')).equals("alt")) {
+                            patternColor = targetColor.substring(targetColor.indexOf('-') + 1, targetColor.indexOf('-') + 2);
+                            if(patternIndex == 0) {
+                                patternString = "";
+                                if(colorMap.containsKey("d" + patternColor)) {
+                                    font.setColor(colorMap.get("d" + patternColor));
+                                }
+                            } else {
+                                patternString = " ";
+                                if(colorMap.containsKey(patternColor)) {
+                                    font.setColor(colorMap.get(patternColor));
+                                }
+                            }
+
+                            for(int c = 0; c < Math.ceil(textString.length() / 2.0); c++) {
+                                int charIndex = (c * 2) + patternIndex;
+                                if(charIndex < textString.length()) {
+                                    patternString += textString.charAt(charIndex) + " ";
+                                }
+                            }
+                        }
                     }
                     font.draw(spriteBatch, patternString, displayX, location[1]);
                 }
                 printIndex += colorCount;
-                if (printIndex == colorString.label.length()) {
+                if(printIndex == colorString.label.length()) {
                     return;
                 }
 
@@ -295,7 +317,7 @@ public class Console {
                     if(start && i == colorCode.length() - 1) {
                         String[] nextColorData = new String[2];
                         nextColorData[0] = colorCode.substring(i - 1);
-                        nextColorData[1] = "";
+                        nextColorData[1] = nextColorString;
                         return nextColorData;
                     }
                 }
@@ -303,7 +325,7 @@ public class Console {
             }
         }
 
-        ArrayList<ColorString> colorStringList = new ArrayList<ColorString>();
+        ArrayList<ColorString> colorStringList = new ArrayList<>();
         colorStringList.add(new ColorString("", ""));
         for(String word : colorString.label.split(" ")) {
             if(word.length() + colorStringList.get(colorStringList.size() - 1).label.length() > maxWidth) {
@@ -315,14 +337,18 @@ public class Console {
         WordWrapUtility wordWrapUtility = new WordWrapUtility();
         int currentColorLength = wordWrapUtility.getNextColorLength(colorString.colorCode);
         String[] nextColorData = wordWrapUtility.getNextColor(colorString.colorCode);
-        int currentCount = 0;
         for(ColorString splitColorString : colorStringList) {
+            int currentCount = 0;
             for(int i = 0; i < splitColorString.label.length(); i++) {
-                splitColorString.colorCode += "1" + nextColorData[1];
                 currentCount++;
                 if(currentCount == currentColorLength) {
+                    splitColorString.colorCode += currentCount + nextColorData[1];
                     currentColorLength = wordWrapUtility.getNextColorLength(nextColorData[0]);
                     nextColorData = wordWrapUtility.getNextColor(nextColorData[0]);
+                    currentCount = 0;
+                } else if(i == splitColorString.label.length() - 1) {
+                    splitColorString.colorCode += currentCount + nextColorData[1];
+                    currentColorLength -= currentCount;
                     currentCount = 0;
                 }
             }
@@ -334,19 +360,14 @@ public class Console {
         float endPercent = .20f;
         int dashCount = (int) (label.length() * endPercent);
         String underlineString = "";
-        String underlineCode = "";
         for(int i = 0; i < label.length(); i++) {
             if(i < dashCount || i >= label.length() - dashCount) {
                 underlineString += "-";
             } else {
                 underlineString += "=";
             }
-            if(i % 2 == 0) {
-                underlineCode += "1dy";
-            } else {
-                underlineCode += "1y";
-            }
         }
+        String underlineCode = underlineString.length() + "alt-y";
 
         return new ColorString(underlineString, underlineCode);
     }
