@@ -72,8 +72,8 @@ public class GameMain extends ApplicationAdapter {
 		Planet planetCotu = new Planet(planetCotuName, planetCotuLocation,93456, 1440, 525600, 23.43f, 7917);
 		systemCotu.planetList.add(planetCotu);
 
-		planetCotu.minutesInDay = 425;
-		planetCotu.minutesInYear = 425;
+		planetCotu.minutesInDay = 400;
+		planetCotu.minutesInYear = 400;
 		planetCotu.updateNightDayTimers();
 		planetCotu.updatePosition();
 
@@ -99,6 +99,7 @@ public class GameMain extends ApplicationAdapter {
 		roomCotu000.itemList.add(Armor.load(1));
 		roomCotu000.itemList.add(Armor.load(2));
 
+		roomCotu000.mobList.add(Mob.load(1));
 		roomCotu000.mobList.add(Mob.load(1));
 
 		ColorString roomCotu001Name = new ColorString("A Peaceful Garden", "2w9shim-w6shim-g");

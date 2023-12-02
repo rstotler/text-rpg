@@ -22,8 +22,8 @@ public class Room {
     public Location location;
     public Map<String, Location> exit;
 
-    public ArrayList<Item> itemList;
     public ArrayList<Mob> mobList;
+    public ArrayList<Item> itemList;
     public ArrayList<Spaceship> spaceshipList;
 
     public ColorString name;
@@ -37,8 +37,8 @@ public class Room {
             exit.put(exitString, null);
         }
 
-        itemList = new ArrayList<>();
         mobList = new ArrayList<>();
+        itemList = new ArrayList<>();
         spaceshipList = new ArrayList<>();
 
         this.name = name;
@@ -59,15 +59,19 @@ public class Room {
                     if(exit.get(exitString) != null) {
                         exitRoom = Room.getRoom(galaxyList, exit.get(exitString));
                     }
-                    Location.display(console, exitRoom, exitString);
+                    if(exitRoom == null || exitRoom.isLit(galaxyList)) {
+                        Location.display(console, exitRoom, exitString);
+                    } else {
+                        Location.displayDark(console, exitString);
+                    }
                 }
             }
 
-            for(DisplayLine displayLine : DisplayLine.quantifyItemList(itemList)) {
+            for(DisplayLine displayLine : DisplayLine.quantifyMobList(mobList, player)) {
                 displayLine.display(console);
             }
 
-            for(DisplayLine displayLine : DisplayLine.quantifyMobList(mobList, player)) {
+            for(DisplayLine displayLine : DisplayLine.quantifyItemList(itemList)) {
                 displayLine.display(console);
             }
 
@@ -77,12 +81,47 @@ public class Room {
         }
 
         else {
-            displayDark(console, galaxyList);
+            displayDark(console, galaxyList, player);
         }
     }
 
-    public void displayDark(Console console, ArrayList<Galaxy> galaxyList) {
+    public void displayDark(Console console, ArrayList<Galaxy> galaxyList, Player player) {
+        console.write(new ColorString("Darkness", "8grad-a"), true);
+        console.write(console.getUnderlineColorString("Darkness"), false);
 
+        for(String exitString : Arrays.asList("North", "East", "South", "West", "Up", "Down")) {
+            if(!((exitString.equals("Up") || exitString.equals("Down")) && exit.get(exitString) == null)) {
+                Room exitRoom = null;
+                if(exit.get(exitString) != null) {
+                    exitRoom = Room.getRoom(galaxyList, exit.get(exitString));
+                }
+                if(exitRoom != null && exitRoom.isLit(galaxyList)) {
+                    Location.display(console, exitRoom, exitString);
+                } else {
+                    Location.displayDark(console, exitString);
+                }
+            }
+        }
+
+        if(!mobList.isEmpty()) {
+            ColorString countColorString = new ColorString("", "");
+            if(mobList.size() > 1) {
+                countColorString.label = " (" + mobList.size() + ")";
+                countColorString.colorCode = "2r" + String.valueOf(mobList.size()).length() + "w1r";
+            }
+            console.write(new ColorString("Someone is here." + countColorString.label, "8shim-w7w1y" + countColorString.colorCode), false);
+        }
+        if(!itemList.isEmpty()) {
+            ColorString countColorString = new ColorString("", "");
+            if(itemList.size() > 1) {
+                countColorString.label = " (" + itemList.size() + ")";
+                countColorString.colorCode = "2r" + String.valueOf(itemList.size()).length() + "w1r";
+            }
+            console.write(new ColorString("Something is on the ground." + countColorString.label, "10shim-w16w1y" + countColorString.colorCode), false);
+        }
+        if(!spaceshipList.isEmpty()) {
+            console.write(new ColorString("", ""), false);
+        }
     }
 
     // Utility Functions //

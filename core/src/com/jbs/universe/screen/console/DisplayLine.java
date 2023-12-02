@@ -35,27 +35,6 @@ public class DisplayLine {
         console.write(new ColorString(displayString, displayColorCode), false);
     }
 
-    public static ArrayList<DisplayLine> quantifyItemList(ArrayList<Item> itemList) {
-        ArrayList<DisplayLine> displayLineList = new ArrayList<>();
-
-        for(Item item : itemList) {
-            boolean containsCheck = false;
-            for(DisplayLine displayLine : displayLineList) {
-                if(item.num == displayLine.num) {
-                    displayLine.count += item.getCount();
-                    containsCheck = true;
-                    break;
-                }
-            }
-            if(!containsCheck) {
-                DisplayLine newDisplayLine = new DisplayLine(item.num, item.getFullName(), item.getCount());
-                displayLineList.add(newDisplayLine);
-            }
-        }
-
-        return displayLineList;
-    }
-
     public static ArrayList<DisplayLine> quantifyMobList(ArrayList<Mob> mobList, Player player) {
         ArrayList<DisplayLine> displayLineList = new ArrayList<>();
 
@@ -64,11 +43,11 @@ public class DisplayLine {
             for(DisplayLine displayLine : displayLineList) {
                 if(mob.num == displayLine.num) {
                     if((displayLine.groupTargetCheck && player.targetList.contains(mob) && player.groupList.contains(mob)) ||
-                    (displayLine.groupCheck && player.groupList.contains(mob)) ||
-                    (displayLine.combatCheck && player.combatList.contains(mob)) ||
-                    (displayLine.targetCheck && !player.groupList.contains(mob) && player.targetList.contains(mob)) ||
-                    (!displayLine.groupTargetCheck && !displayLine.groupCheck && !displayLine.combatCheck && !displayLine.targetCheck
-                    && !player.targetList.contains(mob) && !player.groupList.contains(mob)) && !player.combatList.contains(mob)) {
+                            (displayLine.groupCheck && player.groupList.contains(mob)) ||
+                            (displayLine.combatCheck && player.combatList.contains(mob)) ||
+                            (displayLine.targetCheck && !player.groupList.contains(mob) && player.targetList.contains(mob)) ||
+                            (!displayLine.groupTargetCheck && !displayLine.groupCheck && !displayLine.combatCheck && !displayLine.targetCheck
+                                    && !player.targetList.contains(mob) && !player.groupList.contains(mob)) && !player.combatList.contains(mob)) {
                         displayLine.count++;
                         containsCheck = true;
                         break;
@@ -97,6 +76,27 @@ public class DisplayLine {
                     newDisplayLine.colorString.colorCode = "3m" + newDisplayLine.colorString.colorCode;
                 }
 
+                displayLineList.add(newDisplayLine);
+            }
+        }
+
+        return displayLineList;
+    }
+
+    public static ArrayList<DisplayLine> quantifyItemList(ArrayList<Item> itemList) {
+        ArrayList<DisplayLine> displayLineList = new ArrayList<>();
+
+        for(Item item : itemList) {
+            boolean containsCheck = false;
+            for(DisplayLine displayLine : displayLineList) {
+                if(item.num == displayLine.num) {
+                    displayLine.count += item.getCount();
+                    containsCheck = true;
+                    break;
+                }
+            }
+            if(!containsCheck) {
+                DisplayLine newDisplayLine = new DisplayLine(item.num, item.getFullName(), item.getCount());
                 displayLineList.add(newDisplayLine);
             }
         }

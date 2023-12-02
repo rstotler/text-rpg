@@ -190,12 +190,17 @@ public class Console {
                 }
                 else if(targetColor.contains("-")) {
                     drawPatternCheck = true;
+                    patternColor = targetColor.substring(targetColor.indexOf('-') + 1);
 
                     // Pattern Setup //
                     if(targetColor.substring(0, targetColor.indexOf('-')).equals("shim")) {
                         loopCount = 4;
                     } else if(targetColor.substring(0, targetColor.indexOf('-')).equals("alt")) {
                         loopCount = 2;
+                    } else if(targetColor.substring(0, targetColor.indexOf('-')).equals("fade")) {
+                        loopCount = 4;
+                    } else if(targetColor.substring(0, targetColor.indexOf('-')).equals("grad")) {
+                        loopCount = 4;
                     }
                 } else {
                     font.setColor(Color.WHITE);
@@ -207,6 +212,10 @@ public class Console {
                 }
                 String textString = colorString.label.substring(printIndex, endIndex);
 
+                if(loopCount > textString.length()) {
+                    loopCount = textString.length();
+                }
+
                 for(int patternIndex = 0; patternIndex < loopCount; patternIndex++) {
                     String patternString = textString;
 
@@ -214,7 +223,6 @@ public class Console {
                     if(drawPatternCheck) {
                         if(targetColor.substring(0, targetColor.indexOf('-')).equals("shim")) {
                             if(patternIndex == 0) {
-                                patternColor = targetColor.substring(targetColor.indexOf('-') + 1);
                                 if(colorMap.containsKey("l" + patternColor)) {
                                     font.setColor(colorMap.get("l" + patternColor));
                                 }
@@ -248,7 +256,6 @@ public class Console {
                         }
 
                         else if(targetColor.substring(0, targetColor.indexOf('-')).equals("alt")) {
-                            patternColor = targetColor.substring(targetColor.indexOf('-') + 1, targetColor.indexOf('-') + 2);
                             if(patternIndex == 0) {
                                 patternString = "";
                                 if(colorMap.containsKey("d" + patternColor)) {
@@ -266,6 +273,94 @@ public class Console {
                                 if(charIndex < textString.length()) {
                                     patternString += textString.charAt(charIndex) + " ";
                                 }
+                            }
+                        }
+
+                        else if(targetColor.substring(0, targetColor.indexOf('-')).equals("fade")) {
+                            if(patternIndex == 0) {
+                                if(colorMap.containsKey("l" + patternColor)) {
+                                    font.setColor(colorMap.get("l" + patternColor));
+                                }
+                                patternString = patternString.substring(0, 1);
+                            }
+
+                            else {
+                                patternString = " ";
+                                if(patternIndex > 1) {
+                                    int blankCount = ((textString.length() - 1) / 3) * (patternIndex - 1);
+                                    if(blankCount < 1) {
+                                        blankCount = 1;
+                                    }
+                                    for(int blankIndex = 0; blankIndex < blankCount; blankIndex++) {
+                                        patternString += " ";
+                                    }
+                                }
+
+                                int startIndex = 1 + (((textString.length() - 1) / 3) * (patternIndex - 1));
+                                if(textString.length() <= 3) {
+                                    startIndex = patternIndex;
+                                }
+                                int substringEndIndex = (textString.length() - 1) / 3;
+                                if(patternIndex == 3 && (textString.length() - 1) % 3 > 0) {
+                                    substringEndIndex += (textString.length() - 1) % 3;
+                                }
+                                if(substringEndIndex <= 0) {
+                                    substringEndIndex = 1;
+                                }
+
+                                patternString += textString.substring(startIndex, startIndex + substringEndIndex);
+
+                                if(patternIndex == 1) {
+                                    font.setColor(colorMap.get("d" + patternColor));
+                                } else if(patternIndex == 2) {
+                                    font.setColor(colorMap.get("dd" + patternColor));
+                                } else if(patternIndex == 3) {
+                                    font.setColor(colorMap.get("ddd" + patternColor));
+                                }
+                            }
+                        }
+
+                        else if(targetColor.substring(0, targetColor.indexOf('-')).equals("grad")) {
+                            int middleCount = textString.length() / 4;
+                            int sideCount = ((textString.length() - middleCount) / 2) / 3;
+
+                            patternString = "";
+
+                            if(patternIndex != 3) {
+                                for(int blankCount = 0; blankCount < sideCount * patternIndex; blankCount++) {
+                                    patternString += " ";
+                                }
+
+                                int patternStartIndex = sideCount * patternIndex;
+                                patternString += textString.substring(patternStartIndex, patternStartIndex + sideCount);
+
+                                for(int blankCount = 0; blankCount < (middleCount + (((2 - patternIndex) * sideCount)) * 2); blankCount++) {
+                                    patternString += " ";
+                                }
+
+                                patternStartIndex = patternString.length();
+                                int patternEndIndex = patternStartIndex + sideCount;
+                                if(patternEndIndex > textString.length()) {
+                                    patternEndIndex = textString.length();
+                                }
+                                patternString += textString.substring(patternStartIndex, patternEndIndex);
+                            }
+                            else {
+                                for(int blankCount = 0; blankCount < sideCount * 3; blankCount++) {
+                                    patternString += " ";
+                                }
+                                int patternStartIndex = sideCount * 3;
+                                patternString += textString.substring(patternStartIndex, patternStartIndex + middleCount);
+                            }
+
+                            if(patternIndex == 0) {
+                                font.setColor(colorMap.get("ddd" + patternColor));
+                            } else if(patternIndex == 1) {
+                                font.setColor(colorMap.get("dd" + patternColor));
+                            } else if(patternIndex == 2) {
+                                font.setColor(colorMap.get("d" + patternColor));
+                            } else if(patternIndex == 3) {
+                                font.setColor(colorMap.get(patternColor));
                             }
                         }
                     }

@@ -93,19 +93,19 @@ public class Planet {
 
             if(dayPercent >= dawnPercent && !dawnMessage) {
                 dawnMessage = true;
-                console.write(new ColorString("The sky begins to lighten.", "4w1dc2ddc11w1dw6ddw1y"), true);
+                console.write(new ColorString("The sky begins to lighten.", "4w3shim-c11w7shim-w1y"), true);
             } else if(dayPercent >= sunrisePercent && !sunriseMessage) {
                 sunriseMessage = true;
-                console.write(new ColorString("The sun rises over the horizon.", "4w1dy2ddy16w1dw6ddw1y"), true);
+                console.write(new ColorString("The sun rises over the horizon.", "4w3shim-y16w7shim-w1y"), true);
             } else if(dayPercent >= noonPercent && !noonMessage) {
                 noonMessage = true;
                 console.write(new ColorString("It's noon.", "2w1y6w1y"), true);
             } else if(dayPercent >= duskPercent && !duskMessage) {
                 duskMessage = true;
-                console.write(new ColorString("The sun begins to set.", "4w1dy2ddy11w1dw2ddw1y"), true);
+                console.write(new ColorString("The sun begins to set.", "4w3shim-y11w3shim-w1y"), true);
             } else if(dayPercent >= sunsetPercent && !sunsetMessage) {
                 sunsetMessage = true;
-                console.write(new ColorString("The sun sinks beyond the horizon.", "4w1dy2ddy18w1dw6ddw1y"), true);
+                console.write(new ColorString("The sun sinks beyond the horizon.", "4w3shim-y18w7shim-w1y"), true);
             }
         }
     }
