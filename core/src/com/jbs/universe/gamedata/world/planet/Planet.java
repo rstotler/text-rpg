@@ -76,6 +76,7 @@ public class Planet {
         }
     }
 
+    // Utility Functions //
     public void updatePosition() {
         if(minutesInYear != 0) {
             coordinates.x = (float) Math.cos(Math.toRadians(((minutesInYear + .0) / totalMinutesInYear) * 360)) * distanceFromSun;
@@ -128,5 +129,29 @@ public class Planet {
         noonMessage = minutesInDay / (totalMinutesInDay + .0) >= noonPercent;
         duskMessage = minutesInDay / (totalMinutesInDay + .0) >= duskPercent;
         sunsetMessage = minutesInDay / (totalMinutesInDay + .0) >= sunsetPercent;
+    }
+
+    // Getters & Setters //
+    public static Planet getPlanet(ArrayList<Galaxy> galaxyList, Location location) {
+        if(location.spaceshipObject == null) {
+            return galaxyList.get(location.galaxy).systemList.get(location.system).planetList.get(location.planet);
+        } else if(location.spaceshipObject.location.planet != -1) {
+            return galaxyList.get(location.spaceshipObject.location.galaxy).systemList.get(location.spaceshipObject.location.system).planetList.get(location.spaceshipObject.location.planet);
+        }
+        return galaxyList.get(0).systemList.get(0).planetList.get(0);
+    }
+
+    public String getDayPeriod() {
+        double dayPercent = minutesInDay / (totalMinutesInDay + .0);
+
+        if(dayPercent < dawnPercent || dayPercent >= sunsetPercent) {
+            return "Night";
+        } else if(dayPercent < sunrisePercent) {
+            return "Dawn";
+        } else if(dayPercent < duskPercent) {
+            return "Day";
+        } else {
+            return "Dusk";
+        }
     }
 }

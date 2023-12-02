@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.jbs.universe.components.Keyboard;
+import com.jbs.universe.gamedata.item.type.Armor;
+import com.jbs.universe.gamedata.mob.Mob;
 import com.jbs.universe.gamedata.player.Player;
 import com.jbs.universe.gamedata.world.Location;
 import com.jbs.universe.gamedata.world.area.Area;
@@ -49,6 +51,11 @@ public class GameMain extends ApplicationAdapter {
 	Player player;
 
 	public void loadGame() {
+
+		// Load Player //
+		player = new Player(new Location(0, 0, 0, 1, 0));
+
+		// Galaxy - Milky Way //
 		ColorString galaxyMilkyWayName = new ColorString("Milky Way", "6shim-w3shim-w");
 		Galaxy galaxyMilkyWay = new Galaxy(galaxyMilkyWayName);
 		galaxyList.add(galaxyMilkyWay);
@@ -65,8 +72,8 @@ public class GameMain extends ApplicationAdapter {
 		Planet planetCotu = new Planet(planetCotuName, planetCotuLocation,93456, 1440, 525600, 23.43f, 7917);
 		systemCotu.planetList.add(planetCotu);
 
-		planetCotu.minutesInDay = 350;
-		planetCotu.minutesInYear = 350;
+		planetCotu.minutesInDay = 425;
+		planetCotu.minutesInYear = 425;
 		planetCotu.updateNightDayTimers();
 		planetCotu.updatePosition();
 
@@ -88,6 +95,11 @@ public class GameMain extends ApplicationAdapter {
 		Location locationCotu000 = new Location(0, 0, 0, 1, 0);
 		Room roomCotu000 = new Room(roomCotu000Name, null, locationCotu000);
 		areaCotu.roomList.add(roomCotu000);
+
+		roomCotu000.itemList.add(Armor.load(1));
+		roomCotu000.itemList.add(Armor.load(2));
+
+		roomCotu000.mobList.add(Mob.load(1));
 
 		ColorString roomCotu001Name = new ColorString("A Peaceful Garden", "2w9shim-w6shim-g");
 		Location locationCotu001 = new Location(0, 0, 0, 1, 1);
@@ -111,9 +123,6 @@ public class GameMain extends ApplicationAdapter {
 		ColorString spaceshipCotuShipName = new ColorString("Large Transport Ship", "6w10shim-w4shim-w");
 		Spaceship spaceshipCotuShip = Spaceship.create(spaceshipCotuShipName, "");
 		spaceshipCotuShip.park(galaxyList, roomCotu002);
-
-		// Load Player Data //
-		player = new Player(new Location(0, 0, 0, 1, 0));
 	}
 
 	@Override
@@ -247,7 +256,7 @@ public class GameMain extends ApplicationAdapter {
 
 		// Look //
 		if(userInputList.length == 1 && Arrays.asList("look", "loo", "lo", "l").contains(userInput.toLowerCase())) {
-			playerRoom.display(console, galaxyList);
+			playerRoom.display(console, galaxyList, player);
 		}
 
 		// Movement //

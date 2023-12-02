@@ -1,6 +1,7 @@
 package com.jbs.universe.gamedata.player;
 
 import com.jbs.universe.gamedata.item.Item;
+import com.jbs.universe.gamedata.mob.Mob;
 import com.jbs.universe.gamedata.world.Location;
 import com.jbs.universe.gamedata.world.galaxy.Galaxy;
 import com.jbs.universe.gamedata.world.room.Room;
@@ -15,10 +16,18 @@ import java.util.Map;
 public class Player {
     public Location location;
 
+    public ArrayList<Mob> targetList;
+    public ArrayList<Mob> combatList;
+    public ArrayList<Mob> groupList;
+
     public Map<String, ArrayList<Item>> itemList;
 
     public Player(Location location) {
         this.location = location;
+
+        targetList = new ArrayList<>();
+        combatList = new ArrayList<>();
+        groupList = new ArrayList<>();
 
         itemList = new HashMap<String, ArrayList<Item>>() {{
            put("Misc.", new ArrayList<Item>());
@@ -36,7 +45,7 @@ public class Player {
         else {
             location = currentRoom.exit.get(inputDirection);
             currentRoom = Room.getRoom(galaxyList, location);
-            currentRoom.display(console, galaxyList);
+            currentRoom.display(console, galaxyList, this);
         }
     }
 
@@ -71,7 +80,7 @@ public class Player {
                     location = entranceLocation;
 
                     Room entranceRoom = Room.getRoom(galaxyList, entranceLocation);
-                    entranceRoom.display(console, galaxyList);
+                    entranceRoom.display(console, galaxyList, this);
                     break;
                 }
             }
