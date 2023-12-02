@@ -21,6 +21,7 @@ import static com.jbs.universe.components.Utility.getOppositeDirection;
 public class Room {
     public Location location;
     public Map<String, Location> exit;
+    public Map<String, Door> door;
 
     public ArrayList<Mob> mobList;
     public ArrayList<Item> itemList;
@@ -33,8 +34,10 @@ public class Room {
         this.location = location;
 
         exit = new HashMap<>();
+        door = new HashMap<>();
         for(String exitString : Arrays.asList("North", "East", "South", "West", "Up", "Down")) {
             exit.put(exitString, null);
+            door.put(exitString, null);
         }
 
         mobList = new ArrayList<>();
@@ -47,7 +50,12 @@ public class Room {
 
     public void display(Console console, ArrayList<Galaxy> galaxyList, Player player) {
         if(isLit(galaxyList)) {
-            console.write(name, true);
+            ColorString nameColorString = new ColorString(name.label, name.colorCode);
+            if(isInside()) {
+                nameColorString.label = "(Inside) " + nameColorString.label;
+                nameColorString.colorCode = "1r1w5ddw2r" + nameColorString.colorCode;
+            }
+            console.write(nameColorString, false);
             console.write(console.getUnderlineColorString(name.label), false);
             if(description != null) {
                 console.write(description, false);
@@ -62,7 +70,7 @@ public class Room {
                     if(exitRoom == null || exitRoom.isLit(galaxyList)) {
                         Location.display(console, exitRoom, exitString);
                     } else {
-                        Location.displayDark(console, exitString);
+                        Location.displayDark(console, exitRoom, exitString);
                     }
                 }
             }
@@ -81,13 +89,18 @@ public class Room {
         }
 
         else {
-            displayDark(console, galaxyList, player);
+            displayDark(console, galaxyList);
         }
     }
 
-    public void displayDark(Console console, ArrayList<Galaxy> galaxyList, Player player) {
-        console.write(new ColorString("Darkness", "8grad-a"), true);
-        console.write(console.getUnderlineColorString("Darkness"), false);
+    public void displayDark(Console console, ArrayList<Galaxy> galaxyList) {
+        ColorString nameColorString = new ColorString("Darkness", "8grad-a");
+        if(isInside()) {
+            nameColorString.label = "(Inside) " + nameColorString.label;
+            nameColorString.colorCode = "1r1w5ddw2r" + nameColorString.colorCode;
+        }
+        console.write(new ColorString(nameColorString.label, nameColorString.colorCode), false);
+        console.write(console.getUnderlineColorString(nameColorString.label), false);
 
         for(String exitString : Arrays.asList("North", "East", "South", "West", "Up", "Down")) {
             if(!((exitString.equals("Up") || exitString.equals("Down")) && exit.get(exitString) == null)) {
@@ -98,7 +111,7 @@ public class Room {
                 if(exitRoom != null && exitRoom.isLit(galaxyList)) {
                     Location.display(console, exitRoom, exitString);
                 } else {
-                    Location.displayDark(console, exitString);
+                    Location.displayDark(console, exitRoom, exitString);
                 }
             }
         }
@@ -120,7 +133,12 @@ public class Room {
             console.write(new ColorString("Something is on the ground." + countColorString.label, "10shim-w16w1y" + countColorString.colorCode), false);
         }
         if(!spaceshipList.isEmpty()) {
-            console.write(new ColorString("", ""), false);
+            ColorString countColorString = new ColorString("", "");
+            if(spaceshipList.size() > 1) {
+                countColorString.label = " (" + spaceshipList.size() + ")";
+                countColorString.colorCode = "2r" + String.valueOf(spaceshipList.size()).length() + "w1r";
+            }
+            console.write(new ColorString("A Spaceship is sitting on the launch pad." + countColorString.label, "2w10shim-w28w1y" + countColorString.colorCode), false);
         }
     }
 
@@ -144,7 +162,7 @@ public class Room {
     }
 
     public boolean isInside() {
-        return false;
+        return location.spaceshipObject != null;
     }
 
     public boolean isLit(ArrayList<Galaxy> galaxyList) {
@@ -165,6 +183,15 @@ public class Room {
         if(makeOppositeExit) {
             String oppositeDirection = getOppositeDirection(targetDirection);
             targetRoom.exit.put(oppositeDirection, location);
+        }
+    }
+
+    public void makeDoor(String targetDirection, Room targetRoom, String type, String password) {
+        Door newDoor = new Door(type, password);
+        door.put(targetDirection, newDoor);
+        if(targetRoom != null) {
+            String oppositeDirection = getOppositeDirection(targetDirection);
+            targetRoom.door.put(oppositeDirection, newDoor);
         }
     }
 }

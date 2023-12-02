@@ -91,16 +91,10 @@ public class GameMain extends ApplicationAdapter {
 		Area areaCotu = new Area(areaCotuName);
 		planetCotu.areaList.add(areaCotu);
 
-		ColorString roomCotu000Name = new ColorString("Center of the Universe", "7shim-w3shim-w4shim-w8shim-w");
+		ColorString roomCotu000Name = new ColorString("Center Of The Universe", "7shim-w3shim-w4shim-w8shim-w");
 		Location locationCotu000 = new Location(0, 0, 0, 1, 0);
 		Room roomCotu000 = new Room(roomCotu000Name, null, locationCotu000);
 		areaCotu.roomList.add(roomCotu000);
-
-		roomCotu000.itemList.add(Armor.load(1));
-		roomCotu000.itemList.add(Armor.load(2));
-
-		roomCotu000.mobList.add(Mob.load(1));
-		roomCotu000.mobList.add(Mob.load(1));
 
 		ColorString roomCotu001Name = new ColorString("A Peaceful Garden", "2w9shim-w6shim-g");
 		Location locationCotu001 = new Location(0, 0, 0, 1, 1);
@@ -108,22 +102,36 @@ public class GameMain extends ApplicationAdapter {
 		areaCotu.roomList.add(roomCotu001);
 		roomCotu001.makeExit("South", roomCotu000, true);
 
-		ColorString roomCotu002Name = new ColorString("Launch Pad A", "7shim-w3shim-w2w");
+		ColorString roomCotu002Name = new ColorString("A Wooden Cabin", "2w7shim-o5w");
 		Location locationCotu002 = new Location(0, 0, 0, 1, 2);
 		Room roomCotu002 = new Room(roomCotu002Name, null, locationCotu002);
 		areaCotu.roomList.add(roomCotu002);
-		roomCotu002.makeExit("North", roomCotu000, true);
+		roomCotu002.makeExit("East", roomCotu001, true);
+		roomCotu002.makeDoor("East", roomCotu001, "Manual", "");
 
-		ColorString roomCotu003Name = new ColorString("Launch Pad B", "7shim-w3shim-w2w");
+		ColorString roomCotu003Name = new ColorString("Bridge To The Spaceport", "14w9shim-w");
 		Location locationCotu003 = new Location(0, 0, 0, 1, 3);
 		Room roomCotu003 = new Room(roomCotu003Name, null, locationCotu003);
 		areaCotu.roomList.add(roomCotu003);
-		roomCotu003.makeExit("North", roomCotu002, true);
+		roomCotu003.makeExit("North", roomCotu000, true);
+
+		ColorString roomCotu004Name = new ColorString("Launch Pad A", "7shim-w3shim-w2w");
+		Location locationCotu004 = new Location(0, 0, 0, 1, 4);
+		Room roomCotu004 = new Room(roomCotu004Name, null, locationCotu004);
+		areaCotu.roomList.add(roomCotu004);
+		roomCotu004.makeExit("North", roomCotu003, true);
+		roomCotu004.makeDoor("North", roomCotu003, "Automatic", "");
+
+		ColorString roomCotu005Name = new ColorString("Launch Pad B", "7shim-w3shim-w2w");
+		Location locationCotu005 = new Location(0, 0, 0, 1, 5);
+		Room roomCotu005 = new Room(roomCotu005Name, null, locationCotu005);
+		areaCotu.roomList.add(roomCotu005);
+		roomCotu005.makeExit("North", roomCotu004, true);
 
 		// Transport Ship //
 		ColorString spaceshipCotuShipName = new ColorString("Large Transport Ship", "6w10shim-w4shim-w");
 		Spaceship spaceshipCotuShip = Spaceship.create(spaceshipCotuShipName, "");
-		spaceshipCotuShip.park(galaxyList, roomCotu002);
+		spaceshipCotuShip.park(galaxyList, roomCotu004);
 	}
 
 	@Override
@@ -131,7 +139,6 @@ public class GameMain extends ApplicationAdapter {
 		frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 800, 600, false);
 		spriteBatch = new SpriteBatch();
 		font = new BitmapFont(Gdx.files.internal("Fonts/Code_New_Roman_18.fnt"), Gdx.files.internal("Fonts/Code_New_Roman_18.png"), false);
-		font.setFixedWidthGlyphs("-");
 
 		keyboard = new Keyboard();
 		roomScreen = new RoomScreen();
@@ -144,6 +151,7 @@ public class GameMain extends ApplicationAdapter {
 		galaxyList = new ArrayList<>();
 		player = null;
 
+		font.setFixedWidthGlyphs(Keyboard.inputCharacterList);
 		loadGame();
 	}
 
@@ -257,6 +265,7 @@ public class GameMain extends ApplicationAdapter {
 
 		// Look //
 		if(userInputList.length == 1 && Arrays.asList("look", "loo", "lo", "l").contains(userInput.toLowerCase())) {
+			console.write(new ColorString("", ""), false);
 			playerRoom.display(console, galaxyList, player);
 		}
 
@@ -265,14 +274,14 @@ public class GameMain extends ApplicationAdapter {
 			player.move(console, galaxyList, getDirectionString(userInput.toLowerCase()));
 		}
 
-		// Enter //
-		else if(Arrays.asList("enter", "ente", "ent", "en").contains(userInputList[0])) {
+		// Enter/Board //
+		else if(Arrays.asList("enter", "ente", "ent", "en", "board", "boar", "boa", "bo").contains(userInputList[0])) {
 			if(userInputList.length > 1) {
 				String targetSpaceshipString = combineStringArray(Arrays.copyOfRange(userInputList, 1, userInputList.length));
 				player.enterShip(console, galaxyList, targetSpaceshipString);
 			}
 			else {
-				console.write(new ColorString("Enter what ship?", "15w1y"), true);
+				console.write(new ColorString("Board what ship?", "15w1y"), true);
 			}
 		}
 

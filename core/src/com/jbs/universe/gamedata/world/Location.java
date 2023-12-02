@@ -8,6 +8,8 @@ import com.jbs.universe.screen.console.Console;
 
 import java.util.ArrayList;
 
+import static com.jbs.universe.components.Utility.getOppositeDirection;
+
 public class Location {
     public final int galaxy;
     public final int system;
@@ -37,10 +39,10 @@ public class Location {
         spaceshipObject = spaceship;
     }
 
-    public Location(int galaxy, int system, Location location) {
+    public Location(int galaxy, int system, int planet, Location location) {
         this.galaxy = galaxy;
         this.system = system;
-        planet = location.planet;
+        this.planet = planet;
         area = location.area;
         room = location.room;
 
@@ -73,9 +75,14 @@ public class Location {
         String displayStringRoomName = "";
         String displayColorCodeRoomName = "";
 
+        String oppositeDirection = getOppositeDirection(directionString);
+
         if (targetRoom == null) {
             displayStringRoomName = "( Nothing )";
             displayColorCodeRoomName = "2r7shim-w2r";
+        } else if(targetRoom.door.get(oppositeDirection) != null && targetRoom.door.get(oppositeDirection).status.equals("Closed")) {
+            displayStringRoomName = "[Closed]";
+            displayColorCodeRoomName = "1r1w5ddw1r";
         } else {
             displayStringRoomName = targetRoom.name.label;
             displayColorCodeRoomName = targetRoom.name.colorCode;
@@ -84,7 +91,7 @@ public class Location {
         console.write(new ColorString(displayStringPrefix + displayStringRoomName, displayColorCodePrefix + displayColorCodeRoomName), false);
     }
 
-    public static void displayDark(Console console, String directionString) {
+    public static void displayDark(Console console, Room targetRoom, String directionString) {
         String spaceString = "";
         String spaceColorCode = "";
         if(directionString.length() < 5) {
@@ -97,8 +104,15 @@ public class Location {
         String displayString = "( " + spaceString + directionString + " ) - ";
         String displayColorCode = "2r" + spaceColorCode + directionString.length() + "shim-w" + "2r3dy";
 
-        displayString += "( Black )";
-        displayColorCode += "2r5fade-a2r";
+        String oppositeDirection = getOppositeDirection(directionString);
+
+        if(targetRoom != null && targetRoom.door.get(oppositeDirection) != null && targetRoom.door.get(oppositeDirection).status.equals("Closed")) {
+            displayString += "[Closed]";
+            displayColorCode += "1r1w5ddw1r";
+        } else {
+            displayString += "( Black )";
+            displayColorCode += "2r5fade-a2r";
+        }
 
         console.write(new ColorString(displayString, displayColorCode), false);
     }

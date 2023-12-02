@@ -10,7 +10,7 @@ public class Keyboard {
     public static int backspaceTimer;
 
     public Keyboard() {
-        inputCharacterList = "1234567890-=[];',./ABCDEFGHIJKLMNOPQRSTUVWXYZSpace";
+        inputCharacterList = "1234567890-=[];',./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzSpace";
         upperCharacterList = "!@#$%^&*()_+{}:\"<>?";
         shift = false;
         control = false;

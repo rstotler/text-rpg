@@ -40,6 +40,8 @@ public class Player {
 
         if(currentRoom.exit.get(inputDirection) == null) {
             console.write(new ColorString("You can't go that way!", "7w1y13w1y"), true);
+        } else if(currentRoom.door.get(inputDirection) != null && !currentRoom.door.get(inputDirection).keyCheck(this)) {
+            console.write(new ColorString("You lack the proper key.", "23w1y"), true);
         }
 
         else {
@@ -63,9 +65,9 @@ public class Player {
         if(targetSpaceship == null) {
             console.write(new ColorString("You don't see it.", "7w1y8w1y"), true);
         } else if(!targetSpaceship.password.isEmpty() && !hasKey(targetSpaceship.password)) {
-            console.write(new ColorString("It's locked.", "2w1y8w1y"), true);
+            console.write(new ColorString("You lack the proper key.", "23w1y"), true);
         } else if(!targetSpaceship.outsideEntranceLocationList.contains(currentRoom.location)) {
-            console.write(new ColorString("You don't see any entrances here.", "7w1y24w1y"), true);
+            console.write(new ColorString("You don't see an entrance here.", "7w1y22w1y"), true);
         }
 
 //        else if(targetSpaceship.status.equals("Launching")) {
@@ -78,6 +80,8 @@ public class Player {
                 if(currentRoom.location.equals(entranceLocation)) {
                     entranceLocation = targetSpaceship.innerEntranceLocationList.get(i);
                     location = entranceLocation;
+
+                    console.write(new ColorString("The hatch opens and closes as you step inside.", "45w1y"), true);
 
                     Room entranceRoom = Room.getRoom(galaxyList, entranceLocation);
                     entranceRoom.display(console, galaxyList, this);

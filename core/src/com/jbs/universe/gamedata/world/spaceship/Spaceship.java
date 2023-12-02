@@ -85,7 +85,7 @@ public class Spaceship {
         // targetRoom - Represents Top-Left Corner Of Parking Spot //
 
         // Temp? - Update Galaxy & System Location //
-        location = new Location(targetRoom.location.galaxy, targetRoom.location.system, location);
+        location = new Location(targetRoom.location.galaxy, targetRoom.location.system, targetRoom.location.planet, location);
 
         Room loopRoom = targetRoom;
         Room yRoom = targetRoom;

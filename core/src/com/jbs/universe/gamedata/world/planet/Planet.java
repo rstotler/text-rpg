@@ -88,23 +88,32 @@ public class Planet {
     }
 
     public void displayMessageCheck(Console console, Player player) {
-        if(player.location.planet == location.planet || (player.location.spaceshipObject != null && player.location.spaceshipObject.location.planet == location.planet)) {
-            float dayPercent = (float) (minutesInDay / (totalMinutesInDay + .0));
+        float dayPercent = (float) (minutesInDay / (totalMinutesInDay + .0));
+        boolean displayMessage = player.location.planet == location.planet;
 
-            if(dayPercent >= dawnPercent && !dawnMessage) {
-                dawnMessage = true;
+        if(dayPercent >= dawnPercent && !dawnMessage) {
+            dawnMessage = true;
+            if(displayMessage) {
                 console.write(new ColorString("The sky begins to lighten.", "4w3shim-c11w7shim-w1y"), true);
-            } else if(dayPercent >= sunrisePercent && !sunriseMessage) {
-                sunriseMessage = true;
+            }
+        } else if(dayPercent >= sunrisePercent && !sunriseMessage) {
+            sunriseMessage = true;
+            if(displayMessage) {
                 console.write(new ColorString("The sun rises over the horizon.", "4w3shim-y16w7shim-w1y"), true);
-            } else if(dayPercent >= noonPercent && !noonMessage) {
-                noonMessage = true;
+            }
+        } else if(dayPercent >= noonPercent && !noonMessage) {
+            noonMessage = true;
+            if(displayMessage) {
                 console.write(new ColorString("It's noon.", "2w1y6w1y"), true);
-            } else if(dayPercent >= duskPercent && !duskMessage) {
-                duskMessage = true;
+            }
+        } else if(dayPercent >= duskPercent && !duskMessage) {
+            duskMessage = true;
+            if(displayMessage) {
                 console.write(new ColorString("The sun begins to set.", "4w3shim-y11w3shim-w1y"), true);
-            } else if(dayPercent >= sunsetPercent && !sunsetMessage) {
-                sunsetMessage = true;
+            }
+        } else if(dayPercent >= sunsetPercent && !sunsetMessage) {
+            sunsetMessage = true;
+            if(displayMessage) {
                 console.write(new ColorString("The sun sinks beyond the horizon.", "4w3shim-y18w7shim-w1y"), true);
             }
         }
